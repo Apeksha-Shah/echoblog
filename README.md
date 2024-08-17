@@ -19,19 +19,21 @@ Before you begin, ensure you have met the following requirements:
 ```bash
 git clone <repository-url>
 cd echoblog
+```
 
 ### 2. Install server dependencies
 
 ```bash
 cd server
 npm install dotenv bcrypt body-parser
+```
 
 ### 3. Configure environment variables
 
 ```bash
 PORT=<your-port-number>
 MONGO_URL=<your-mongo-db-connection-string>
-
+```
 
 ## Usage
 
