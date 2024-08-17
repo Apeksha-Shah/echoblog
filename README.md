@@ -38,5 +38,7 @@ MONGO_URL=<your-mongo-db-connection-string>
 ## Usage
 
 Start the Server
+```bash
 cd server
 npm start
+```
