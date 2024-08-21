@@ -15,13 +15,24 @@ import commentRoutes from './routes/commentRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import permissionRoutes from './routes/permissionRoutes.js';
+import cors from 'cors';
 
 const app = express();
+
+const corsOption = {
+    origin: ['http://localhost:5173'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}
+
+app.use(cors(corsOption));
+
 connectDB();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use('/register',userRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/role',roleRoutes);

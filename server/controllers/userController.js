@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
+import transporter from "../nodeMailer/Mail.js";
 
 const getAllUsers = (req,res)=>{
     const users = User.find().then((users)=>{
@@ -19,23 +20,53 @@ const getSpecificUser = (req,res)=>{
 }
 
 const createUser = async (req, res) => {
-    const { username, email, password, role_id } = req.body;
+    const { username, email, password, userType } = req.body;
 
-    if (!username || !email || !password || !role_id) {
-        return res.status(400).json('All fields are required');
+    if (!username || !email || !password || !userType) {
+        return res.status(400).json({require:'All fields are required'});
     }
 
     try {
+        const existingUsername = await User.findOne({username});
+        if(existingUsername){
+            return res.status(400).json({username:'Username already exists'});
+        }
+
+        const existingemail = await User.findOne({email});
+        if(existingemail){
+            return res.status(400).json({email:'Email already exists'});
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
+        let role_id = "66c0e8174c7bcb4632a34ba4";
+        if(userType === 'Admin')
+            role_id = "66c0e80c4c7bcb4632a34ba2";
 
         const newUser = new User({
             username,
             email,
-            password: hashedPassword,
+            password: hashedPassword,   
             role_id
         });
 
         await newUser.save();
+
+        (async () => {
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: email,
+                subject: 'This is a test email',
+                text: 'Hello, this is a test email from Node.js',
+            };
+
+            try {
+                await transporter.sendMail(mailOptions);
+                console.log("Email sent");
+            } catch (err) {
+                console.log("Email sending failed: " + err.message);
+            }
+        })();
+        
         res.status(201).json('User added');
     } catch (err) {
         res.status(500).json('Error: ' + err.message);
