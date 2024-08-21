@@ -25,20 +25,20 @@ cd echoblog
 
 ```bash
 cd server
-npm install dotenv bcrypt body-parser
+npm install dotenv bcrypt body-parser nodemailer cors
 ```
+
+### 3. Install client side dependencies
+npm install axios
+npm install react-router-dom
+
 
 ### 3. Configure environment variables
 
 ```bash
 PORT=<your-port-number>
 MONGO_URL=<your-mongo-db-connection-string>
+EMAIL=<Your_email>
+PASSWORD=<APP_PASSWORD>
 ```
 
-## Usage
-
-Start the Server
-```bash
-cd server
-npm start
-```
