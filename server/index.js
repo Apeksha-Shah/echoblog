@@ -33,6 +33,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use('/register',userRoutes);
+app.use('/auth',userRoutes);
+app.use('/refresh-token',userRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/role',roleRoutes);

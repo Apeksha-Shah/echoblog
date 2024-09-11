@@ -2,6 +2,9 @@ import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import transporter from "../nodeMailer/Mail.js";
+import authUtils from "../utils/authUtils.js";
+
+const { generateToken,generateRefreshToken,verifyToken } = authUtils;
 
 const getAllUsers = (req,res)=>{
     const users = User.find().then((users)=>{
@@ -17,6 +20,31 @@ const getSpecificUser = (req,res)=>{
     }).catch((err)=>{
         res.status(400).json('Error: '+err);
     })
+}
+
+const login = async (req,res) => {
+    const {email,password} = req.body;
+    // console.log("hey"+ email+" "+ password);
+    if(!email || !password){
+        return res.status(400).json({require:'All fields are required'});
+    }
+    try{
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({loginerror:'Logged in failed'});
+        }
+        const isMatch = await bcrypt.compare(password,user.password);
+        // console.log(isMatch);
+        if(isMatch){
+            const token = generateToken(user);
+            res.status(200).json({mes:'Logged in successfully', token:token, user: user});
+        }
+        else{
+            res.status(400).json({password:'Logged in failed'});
+        }
+    }catch(err){
+        res.status(400).json('Error: '+err.message);
+    }
 }
 
 const createUser = async (req, res) => {
@@ -53,10 +81,13 @@ const createUser = async (req, res) => {
 
         (async () => {
             let mailOptions = {
-                from: process.env.EMAIL,
+                from: {
+                    address: process.env.EMAIL,
+                    name: 'Echoblog',
+                },
+                html: '<a href = "http://localhost:5000">Click here to verify your email</a>',
                 to: email,
-                subject: 'This is a test email',
-                text: 'Hello, this is a test email from Node.js',
+                subject: 'Verification Email',
             };
 
             try {
@@ -104,4 +135,4 @@ const deleteUser = (req,res)=>{
     })
 }
 
-export default {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser};
+export default {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser,login};

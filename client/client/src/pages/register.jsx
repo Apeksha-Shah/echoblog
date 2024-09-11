@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Register() {
@@ -10,6 +10,7 @@ function Register() {
   const [username, setUsername] = React.useState("");
   const [errors, setErrors] = React.useState({});
   const [successMessage, setSuccessMessage] = React.useState("");
+  const navigate = useNavigate();
 
   const submithandler = async (e) => {
     e.preventDefault();
@@ -32,6 +33,7 @@ function Register() {
       
       setSuccessMessage("User successfully registered!");
       resetForm();
+      navigate("/login");
 
     } catch (err) {
       if (err.response) {
