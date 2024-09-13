@@ -2,7 +2,7 @@ import express from "express";
 import userController from "../controllers/userController.js";
 import authenticate from "../middleware/authenticate.js";
 
-const {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser,login} = userController;
+const {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser,login,verifyOtp} = userController;
 
 const userRoutes = express.Router();
 
@@ -12,5 +12,6 @@ userRoutes.post("/",createUser);
 userRoutes.put("/:id",authenticate,updateUser);
 userRoutes.delete("/:id",authenticate,deleteUser);
 userRoutes.post("/login",login);
+userRoutes.post("/verifyotp",verifyOtp);
 
 export default userRoutes;

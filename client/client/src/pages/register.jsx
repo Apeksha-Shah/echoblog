@@ -33,7 +33,7 @@ function Register() {
       
       setSuccessMessage("User successfully registered!");
       resetForm();
-      navigate("/login");
+      navigate("/verifyotp", { state: { email } });
 
     } catch (err) {
       if (err.response) {

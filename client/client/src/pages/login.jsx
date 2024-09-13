@@ -4,6 +4,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import '@fortawesome/fontawesome-free/css/all.css'
 
+
 const reducer = (state,action) => {
     switch(action.type){
         case "email":
@@ -41,6 +42,7 @@ function Login(){
         setSuccessMessage(response.data);
         console.log(response.data);
         resetForm();
+        navigate("/verifyotp");
         navigate("/home");
         localStorage.setItem("token",response.data.token);
         localStorage.setItem("User",response.data.user);

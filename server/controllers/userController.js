@@ -3,8 +3,11 @@ import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import transporter from "../nodeMailer/Mail.js";
 import authUtils from "../utils/authUtils.js";
+import generateOTP from "../config/generateOTP.js";
 
 const { generateToken,generateRefreshToken,verifyToken } = authUtils;
+
+const otpcache = {};
 
 const getAllUsers = (req,res)=>{
     const users = User.find().then((users)=>{
@@ -47,62 +50,85 @@ const login = async (req,res) => {
     }
 }
 
+
 const createUser = async (req, res) => {
     const { username, email, password, userType } = req.body;
-
+  
     if (!username || !email || !password || !userType) {
-        return res.status(400).json({require:'All fields are required'});
+      return res.status(400).json({ require: "All fields are required" });
     }
-
+  
     try {
-        const existingUsername = await User.findOne({username});
-        if(existingUsername){
-            return res.status(400).json({username:'Username already exists'});
-        }
-
-        const existingemail = await User.findOne({email});
-        if(existingemail){
-            return res.status(400).json({email:'Email already exists'});
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        let role_id = "66c0e8174c7bcb4632a34ba4";
-        if(userType === 'Admin')
-            role_id = "66c0e80c4c7bcb4632a34ba2";
-
-        const newUser = new User({
-            username,
-            email,
-            password: hashedPassword,   
-            role_id
-        });
-
-        await newUser.save();
-
-        (async () => {
-            let mailOptions = {
-                from: {
-                    address: process.env.EMAIL,
-                    name: 'Echoblog',
-                },
-                html: '<a href = "http://localhost:5000">Click here to verify your email</a>',
-                to: email,
-                subject: 'Verification Email',
-            };
-
-            try {
-                await transporter.sendMail(mailOptions);
-                console.log("Email sent");
-            } catch (err) {
-                console.log("Email sending failed: " + err.message);
-            }
-        })();
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) {
+        return res.status(400).json({ username: "Username already exists" });
+      }
+  
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ email: "Email already exists" });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      let role_id = "66c0e8174c7bcb4632a34ba4"; 
+      if (userType.toLowerCase() === "admin") {
+        role_id = "66c0e80c4c7bcb4632a34ba2"; 
+      }
+  
+      const newUser = new User({
+        username,
+        email,
+        password: hashedPassword,
+        role_id,
+      });
+  
+      const OTP = generateOTP();
+      otpcache[email] = OTP;
+  
+     
+      let mailOptions = {
+        from: {
+          address: process.env.EMAIL,
+          name: "Echoblog",
+        },
+        html: `<h1>Your OTP: ${OTP}</h1>`,
+        to: email,
+        subject: "Verification Email",
+      };
+  
+      try {
+      
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent");
         
-        res.status(201).json('User added');
+        await newUser.save();  
+        
+        res.status(201).json("User added. OTP sent to email.");
+      } catch (emailError) {
+        console.log("Email sending failed: " + emailError.message);
+        return res.status(500).json({ error: "Email sending failed" });
+      }
     } catch (err) {
-        res.status(500).json('Error: ' + err.message);
+      console.log(err);
+      res.status(500).json("Error: " + err.message);
     }
-};
+  };
+
+const verifyOtp = async (req,res) => {
+    const {otp,email} = req.body;
+    if(!otp){
+        return res.status(400).json({require:'Please enter OTP'});
+    }
+    else{
+        if(otpcache[email].toString() === otp.toString()){
+            res.status(200).json('OTP verified');
+        }
+        else{
+            res.status(400).json({msg:'OTP verification failed'});
+        }
+    }
+}
 
 const updateUser = async(req,res)=>{
     try{
@@ -135,4 +161,4 @@ const deleteUser = (req,res)=>{
     })
 }
 
-export default {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser,login};
+export default {getAllUsers,getSpecificUser,createUser,updateUser,deleteUser,login,verifyOtp};
