@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "./Header";
 import '../App.css'; // Ensure you import your CSS file
 import BlogCard from "./BlogCard";
-import Blogdetail from "./blogdetail";
+import logo from '../assets/logo.png';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -35,18 +35,33 @@ const Home = () => {
   }, [token, navigate]);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-800">
       <Header />
-      <div className="p-8">
-        <button
-          onClick={() => navigate("/create-blog")} // Redirect to the CreateBlog page
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-        >
-          Create Blog
-        </button>
+      <div className="container mx-auto p-6">
+        <div className="flex justify-center my-4">
+          <img src={logo} alt="Logo" className="h-40 w-40 rounded-full" /> 
+        </div>
+
+        <h1 className="text-4xl text-center font-bold mb-4 text-blue-400">
+          Welcome to EchoBlog
+        </h1>
+        <p className="text-center text-lg mb-8 text-gray-300">
+          Share your thoughts, ideas, and stories with the world. Connect with fellow bloggers and readers!
+        </p>
+
+        <div className="text-center mb-6">
+          <button
+            onClick={() => navigate("/create-blog")} 
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Create Blog
+          </button>
+        </div>
 
         {/* Render the list of blogs */}
-        <BlogCard />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <BlogCard className="bg-white shadow-md rounded-lg p-4 transition duration-200 hover:shadow-lg" />
+        </div>
       </div>
     </div>
   );

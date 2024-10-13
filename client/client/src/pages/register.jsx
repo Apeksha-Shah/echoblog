@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Register() {
@@ -53,14 +53,14 @@ function Register() {
   };
 
   return (
-    <div className="flex flex-col px-6 py-4">
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="flex items-center justify-center text-xl font-bold font-sans">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-800 to-gray-900">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex items-center justify-center text-xl font-bold font-sans text-white mb-4">
           <div>Sign Up</div>
         </div>
 
         <form
-          className="mt-4 space-y-6 border p-8 rounded shadow-xl w-96"
+          className="space-y-6 p-8 rounded-lg shadow-lg bg-gray-800"
           onSubmit={submithandler}
         >
           <div>
@@ -76,7 +76,7 @@ function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-10 h-10 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="pl-10 h-12 block w-full rounded-md bg-gray-700 text-white focus:outline-none placeholder:text-gray-400"
               />
             </div>
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -95,7 +95,7 @@ function Register() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="pl-10 h-10 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="pl-10 h-12 block w-full rounded-md bg-gray-700 text-white focus:outline-none placeholder:text-gray-400"
               />
             </div>
             {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
@@ -114,7 +114,7 @@ function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="pl-10 h-10 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="pl-10 h-12 block w-full rounded-md bg-gray-700 text-white focus:outline-none placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -132,14 +132,14 @@ function Register() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="pl-10 h-10 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="pl-10 h-12 block w-full rounded-md bg-gray-700 text-white focus:outline-none placeholder:text-gray-400"
               />
             </div>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
 
           <div>
-            <label htmlFor="userType" className="block text-fm font-medium text-gray-900">
+            <label htmlFor="userType" className="text-white block text-sm font-medium text-gray-900">
               Register as
             </label>
             <select
@@ -147,7 +147,7 @@ function Register() {
               name="userType"
               value={userType}
               onChange={(e) => setUserType(e.target.value)}
-              className="mt-1 h-10 block w-full pl-3 pr-10 py-2 text-base ring-1 ring-inset ring-gray-300 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              className="mt-1 h-10 block w-full pl-3 pr-10 py-2 text-base ring-1 ring-inset ring-gray-300 bg-gray-700 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
@@ -157,7 +157,7 @@ function Register() {
           <div>
             <button
               type="submit"
-              className="flex w-full h-12 justify-center rounded-full bg-gray-800 px-3 py-2.5 text-sm leading-6 text-white shadow-sm hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="h-12 flex w-full justify-center rounded-full bg-blue-500 hover:bg-blue-700 px-3 py-2.5 text-sm leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               Sign Up
             </button>
@@ -165,7 +165,7 @@ function Register() {
           </div>
 
           <div className='flex items-center justify-center text-sm'>
-            <p>Already have an account?
+            <p className="text-white">Already have an account?
               <Link to="/login" className="text-blue-500 hover:underline"> Sign in</Link>
             </p>
           </div>
