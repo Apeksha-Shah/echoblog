@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
 const postSchema = new mongoose.Schema({
   title: {
@@ -16,6 +16,11 @@ const postSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Author ID is required']
   },
+  blog_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog',
+    required: [true, 'Blog ID is required']
+  },
   created_at: {
     type: Date,
     default: Date.now
@@ -23,6 +28,23 @@ const postSchema = new mongoose.Schema({
   updated_at: {
     type: Date,
     default: Date.now
+  },
+  category_ids: [{
+     type: mongoose.Schema.Types.ObjectId, 
+     ref: 'Category' 
+  }], 
+  tags: {
+    type: mongoose.Schema.Types.Array,
+    validate: {
+      validator: function (v) {
+        return v.length <= 10;
+      },
+      message: 'Tags cannot exceed 10'
+    }
+  },
+  file: {
+    type: String,
+    required: [true, 'File is required']
   }
 });
 

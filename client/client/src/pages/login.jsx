@@ -29,7 +29,6 @@ function Login(){
 
   const SubmitHandler = async (e) => {
      e.preventDefault();
-     console.log(state);
 
      setErrors({});
      setSuccessMessage({});
@@ -40,7 +39,7 @@ function Login(){
             password:state.password
         });
         setSuccessMessage(response.data);
-        console.log(response.data);
+        // console.log(response.data);
         resetForm();
         navigate("/verifyotp");
         navigate("/home");

@@ -1,55 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect } from "react";
+import Header from "./Header";
+import '../App.css'; // Ensure you import your CSS file
+import BlogCard from "./BlogCard";
+import Blogdetail from "./blogdetail";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-    const navigate = useNavigate();
-    const token = localStorage.getItem("token");
-
-    const submithandler = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("User");
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
         navigate("/login");
+      }
+      try {
+        const response = await axios.get("http://localhost:5000/api/users/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (token) {
+      fetchUser();
+    } else {
+      navigate("/login");
     }
-    
-    useEffect(() =>{
-        try{
-            const fetchUser =  async () => {
-                if (!localStorage.getItem("token")) {
-                    navigate("/login");
-                }
-                try{
-                    const response = await axios.get("http://localhost:5000/api/users/",{
-                        headers:{
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    const allusers = await response.data;
-                    console.log(allusers);
-                }catch(err){
-                    console.log(err);
-                }
-            }
-            if(token){
-                fetchUser();
-            }
-            else{
-                navigate("/login");
-            }
-        }catch(err){
-            console.log(err);
-        }
-    },[token])
+  }, [token, navigate]);
 
+  return (
+    <div>
+      <Header />
+      <div className="p-8">
+        <button
+          onClick={() => navigate("/create-blog")} // Redirect to the CreateBlog page
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        >
+          Create Blog
+        </button>
 
-    return(
-        <>
-           <h1>Home Page</h1>
-           <button onClick={submithandler}>Logout</button>
-        </>
-    );
-}
+        {/* Render the list of blogs */}
+        <BlogCard />
+      </div>
+    </div>
+  );
+};
 
 export default Home;

@@ -1,5 +1,8 @@
 import Post from '../models/postModel.js'; 
 import User from '../models/userModel.js'; 
+import Category from '../models/categoryModel.js';
+import multer from 'multer';
+
 
 const getAllPosts = async (req, res) => {
     try {
@@ -23,12 +26,32 @@ const getSpecificPost = async (req, res) => {
     }
 };
 
-const createPost = async (req, res) => {
-    const { title, content, author_id } = req.body;
+const getAllPostsOfBlog = async (req, res) => {
+    try {
+        const posts = await Post.find({blog_id: req.params.id}).populate('author_id'); 
+        if(posts.length === 0){
+            return res.status(404).json('No posts found');
+        }
+        res.json(posts);
+    } catch (err) {
+        res.status(400).json('Error: ' + err.message);
+    }
+}
 
-    if (!title || !content || !author_id) {
+const createPost = async (req, res) => {
+
+    const { title, content, category, tags, publishDate, author_id, blogId } = req.body;
+    // console.log("outside try block");
+
+    if (!title || !content || !category || !tags || !publishDate || !author_id || !blogId) {
         return res.status(400).json('All fields are required');
     }
+
+    const file = req.file;
+    if(!file){
+        return res.status(400).json('File is required');
+    }
+
 
     try {
         const author = await User.findById(author_id);
@@ -36,10 +59,21 @@ const createPost = async (req, res) => {
             return res.status(400).json('Invalid author ID');
         }
 
+        // console.log("inside try block");
+        const c1 = await Category.findOne({category_name: category});
+        if (!c1) {
+                return res.status(400).json(`Invalid category : ${category}`);
+        }
+
         const newPost = new Post({
             title,
             content,
-            author_id
+            author_id,
+            publishDate,
+            tags,
+            category_ids: c1._id,
+            blog_id: blogId,
+            file: file.filename
         });
 
         await newPost.save();
@@ -88,4 +122,4 @@ const deletePost = async (req, res) => {
     }
 };
 
-export default { getAllPosts, getSpecificPost, createPost, updatePost, deletePost };
+export default { getAllPosts, getSpecificPost, createPost, updatePost, deletePost, getAllPostsOfBlog };

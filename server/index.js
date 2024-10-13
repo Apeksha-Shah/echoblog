@@ -16,6 +16,17 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import permissionRoutes from './routes/permissionRoutes.js';
 import cors from 'cors';
+import blogRoutes from './routes/blogRoutes.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Get __dirname for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// console.log(import.meta.url);
+// console.log(__filename);
+// console.log(__dirname);
 
 const app = express();
 
@@ -31,12 +42,17 @@ connectDB();
 
 const PORT = process.env.PORT || 3000;
 
+// middleware to serve static files
+app.use('/uploads', express.static(join(__dirname, 'uploads')));
+
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/register',userRoutes);
 app.use('/auth',userRoutes);
 app.use('/refresh-token',userRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/blogs', blogRoutes);
 app.use('/api/role',roleRoutes);
 app.use('/api/tags', tagRoutes); 
 app.use('/api/views', viewRoutes); 
