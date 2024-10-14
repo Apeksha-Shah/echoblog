@@ -37,7 +37,6 @@ const getAllPostsOfBlog = async (req, res) => {
 const createPost = async (req, res) => {
 
     const { title, content, category, tags, publishDate, author_id, blogId } = req.body;
-    // console.log("outside try block");
 
     if (!title || !content || !category || !tags || !publishDate || !author_id || !blogId) {
         return res.status(400).json('All fields are required');
@@ -51,7 +50,6 @@ const createPost = async (req, res) => {
             return res.status(400).json('Invalid author ID');
         }
 
-        // console.log("inside try block");
         const c1 = await Category.findOne({category_name: category});
         if (!c1) {
                 return res.status(400).json(`Invalid category : ${category}`);
@@ -80,22 +78,32 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
+
         if (!post) {
             return res.status(404).json('Post not found');
         }
 
-        const { title, content, author_id } = req.body;
+        const files = req.files || [];
+        const filenames = files.map(file => file.filename);
+        post.files = [...post.files, ...filenames]; 
+
+        const { title, content, category, tags, publishDate, author_id } = req.body;
+
         if (title) post.title = title;
         if (content) post.content = content;
         if (author_id) {
-            const author = await User.findById(author_id);
-            if (!author) {
-                return res.status(400).json('Invalid author ID');
-            }
             post.author_id = author_id;
         }
-
-        post.updated_at = Date.now(); // Update the timestamp
+        if (category) {
+            const c1 = await Category.findOne({ category_name: category });
+            if (!c1) {
+                return res.status(400).json(`Invalid category: ${category}`);
+            }
+            post.category_ids = c1._id;
+        }
+        if (tags) post.tags = tags.split(',').map(tag => tag.trim());
+        if (publishDate) post.publishDate = publishDate;
+        post.updated_at = Date.now(); 
 
         await post.save();
         res.status(200).json('Post updated');

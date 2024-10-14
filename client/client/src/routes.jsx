@@ -21,6 +21,7 @@ function Routing() {
             <Route path="/create-blog" element = {<CreateBlog/>}></Route>
             <Route path="/blog/:id" element = {<BlogDetail/>}></Route>
             <Route path='/blogList' element = {<BlogList/>}></Route>
+            <Route path='/edit-post/:id' element={<CreatePost isEditing = {true}/>}/>
         </Routes>
      </Router>
   )

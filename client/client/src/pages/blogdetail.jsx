@@ -70,11 +70,9 @@ const BlogDetail = () => {
     navigate(`/blog/${selectedBlogId}`);
   };
 
-  // Initialize the image indexes for each post
   const [currentImageIndexes, setCurrentImageIndexes] = useState([]);
 
   useEffect(() => {
-    // Set current image indexes based on the posts length
     if (posts.length > 0) {
       setCurrentImageIndexes(Array(posts.length).fill(0));
     }
@@ -141,7 +139,16 @@ const BlogDetail = () => {
                   className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
                   style={{ fontSize: '0.98rem' }} 
                 >
-                  <h3 className="text-xl font-semibold mb-3 text-indigo-400">{post.title}</h3>
+                  <div className='flex justify-end'>
+                      <button className="text-blue-400 
+                                  bg-gradient-to-r from-gray-800
+                                   to-gray-900 py-1 px-3 rounded-md 
+                                   hover:bg-blue-700 hover:text-white
+                                    transition-all duration-200"
+                              onClick={() => navigate(`/edit-post/${post._id}`,{ state: {post}})}
+                      >Edit Post</button></div>
+
+                    <h3 className="text-xl font-semibold mb-3 text-indigo-400 -mt-4">{post.title}</h3>
                   <p className="text-gray-300 mb-3">{post.content.substring(0, 150)}...</p>
                   <div className="text-sm text-gray-400 mb-2">
                     Published on: {new Date(post.created_at || post.publishDate).toLocaleDateString()}

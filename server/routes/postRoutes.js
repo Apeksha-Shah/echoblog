@@ -44,7 +44,12 @@ postRoutes.post("/",upload, (req, res, next) => {
     next();  
 }, createPost);
 
-postRoutes.put("/:id",updatePost);
+postRoutes.put("/:id",upload , (req,res,next)=>{
+    console.log("PUT / route hit.");
+    console.log(req.body);
+    next();
+},updatePost);
+
 postRoutes.delete("/:id",deletePost);
 postRoutes.get("/blog/:id", getAllPostsOfBlog);
 
