@@ -32,15 +32,16 @@ const storage = multer.diskStorage({
         }
 })
 
-// middleware to upload file 
-const upload = multer({storage: storage}).single('file');
+const upload = multer({storage: storage}).array('files');
 
 postRoutes.get("/", getAllPosts);
 postRoutes.get("/:id",getSpecificPost);
 
 postRoutes.post("/",upload, (req, res, next) => {
     console.log("POST / route hit.");
-    next();  // Continue to the upload middleware
+    console.log(req.body); 
+    console.log(req.files);
+    next();  
 }, createPost);
 
 postRoutes.put("/:id",updatePost);

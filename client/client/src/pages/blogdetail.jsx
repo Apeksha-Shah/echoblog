@@ -1,19 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BlogDetail = () => {
-  const [posts, setPosts] = useState([]);
-  const [blogs, setBlogs] = useState([]); // State to hold blogs for the dropdown
   const navigate = useNavigate();
-  const { id } = useParams();
+  const token = localStorage.getItem('token');
+  const location = useLocation();
+  const [posts, setPosts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [currentBlogId, setCurrentBlogId] = useState(null);
+  const decodedToken = JSON.parse(atob(token.split('.')[1]));
+  const author_id = decodedToken.id;
+  const [title, setTitle] = useState('');
+  
+  const { blogId: initialBlogId } = location.state || {};
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/Login');
+    }
+    setCurrentBlogId(initialBlogId);  
+  }, [initialBlogId]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts/blog/${id}`);
-        setPosts(response.data);
+        const response = await axios.get(`http://localhost:5000/api/posts/blog/${currentBlogId}`);
+        if (response.data) {
+          setPosts(response.data);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -21,57 +37,108 @@ const BlogDetail = () => {
 
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/blogs'); // Fetch all blogs for the dropdown
-        setBlogs(response.data);
+        const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
+        if (response.data) {
+          setBlogs(response.data);
+        }
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchPosts();
-    fetchBlogs();
-  }, [id]);
+    const fetchTitle = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/blogs/${currentBlogId}`);
+        if (response.data) {
+          setTitle(response.data.title);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (currentBlogId) {
+      fetchPosts();
+      fetchTitle();
+    }
+    fetchBlogs();  
+  }, [currentBlogId]);  
 
   const handleBlogChange = (event) => {
-    navigate(`/blog/${event.target.value}`);
+    const selectedBlogId = event.target.value;
+    setCurrentBlogId(selectedBlogId);  
+    navigate(`/blog/${selectedBlogId}`);
+  };
+
+  // Initialize the image indexes for each post
+  const [currentImageIndexes, setCurrentImageIndexes] = useState([]);
+
+  useEffect(() => {
+    // Set current image indexes based on the posts length
+    if (posts.length > 0) {
+      setCurrentImageIndexes(Array(posts.length).fill(0));
+    }
+  }, [posts]);
+
+  const handleNextImage = (postIndex) => {
+    setCurrentImageIndexes((prevIndexes) => {
+      const newIndexes = [...prevIndexes];
+      if (posts[postIndex].files && posts[postIndex].files.length > 0) {
+        newIndexes[postIndex] = (newIndexes[postIndex] + 1) % posts[postIndex].files.length;
+      }
+      return newIndexes;
+    });
+  };
+
+  const handlePrevImage = (postIndex) => {
+    setCurrentImageIndexes((prevIndexes) => {
+      const newIndexes = [...prevIndexes];
+      if (posts[postIndex].files && posts[postIndex].files.length > 0) {
+        newIndexes[postIndex] = (newIndexes[postIndex] - 1 + posts[postIndex].files.length) % posts[postIndex].files.length;
+      }
+      return newIndexes;
+    });
   };
 
   return (
     <>
       <Header />
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 px-4 flex flex-col">
-        <div className="flex flex-col md:flex-row justify-center items-center mb-4">
+      <div className="min-h-screen bg-gradient-to-r from-gray-800 to-gray-900 text-white flex flex-col">
+        <div className="mt-6 flex flex-col md:flex-row justify-center items-center mb-4">
           <div className="w-full md:w-1/4 pr-2 mb-4 md:mb-0">
             <select 
               onChange={handleBlogChange} 
               className="bg-gray-700 text-white rounded-md p-2 w-full"
+              value={currentBlogId || ""} 
             >
-              <option value="" disabled selected>Select a Blog</option>
+              <option value="" disabled>{title || "Select a blog"}</option>
               {blogs.map((blogItem) => (
                 <option key={blogItem._id} value={blogItem._id}>
                   {blogItem.title}
                 </option>
               ))}
-            </select>
+            </select> 
           </div>
+
           <div className="w-full md:w-1/4 pl-2">
             <button
-              onClick={() => navigate('/create-post', { state: { blogId: id } })}
+              onClick={() => navigate('/create-post', { state: { blogId: currentBlogId } })}
               className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md w-full"
+              disabled={!currentBlogId}
             >
               Create Post
             </button>
           </div>
         </div>
 
-        <div className="w-full p-4 overflow-x-hidden">
+        <div className="flex-grow w-full p-4">
           <h2 className="text-3xl font-bold text-gray-200 text-center mb-4">Posts</h2>
           {posts.length > 0 ? (
             <div className="grid grid-cols-1 gap-6">
-              {posts.map((post) => (
+              {posts.map((post, postIndex) => (
                 <div 
                   key={post._id} 
-                  className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-7"
+                  className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
                   style={{ fontSize: '0.98rem' }} 
                 >
                   <h3 className="text-xl font-semibold mb-3 text-indigo-400">{post.title}</h3>
@@ -79,7 +146,6 @@ const BlogDetail = () => {
                   <div className="text-sm text-gray-400 mb-2">
                     Published on: {new Date(post.created_at || post.publishDate).toLocaleDateString()}
                   </div>
-                  {/* Center the tags */}
                   <div className="flex justify-center flex-wrap gap-2 mb-4">
                     {post.tags?.map((tag, index) => (
                       <span key={index} className="bg-indigo-700 text-white px-3 py-1 rounded-full text-sm">
@@ -87,28 +153,47 @@ const BlogDetail = () => {
                       </span>
                     ))}
                   </div>
-                  {post.file ? (
-                    post.file.endsWith('.jpg') || post.file.endsWith('.png') || post.file.endsWith('.jpeg') ? (
-                      <div className="flex justify-center mb-3"> {/* Center the image */}
-                        <img
-                          src={`http://localhost:5000/uploads/${post.file}`}
-                          alt="Post Image"
-                          className="w-1/3 h-auto rounded-lg shadow-md" // Adjusted size here
-                        />
-                      </div>
-                    ) : (
-                      <a href={`http://localhost:5000/uploads/${post.file}`} target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">
-                        View File
-                      </a>
-                    )
+                  {post.files && post.files.length > 0 ? ( 
+                    <div className="flex justify-center mb-3">
+                      {post.files.some(file => file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.jpeg')) ? (
+                        <div className="relative">
+                          <img
+                            src={`http://localhost:5000/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
+                            alt={`Post Image ${currentImageIndexes[postIndex] + 1}`}
+                            className="w-1/2 h-auto rounded-lg shadow-md inline"
+                          />
+                          {post.files.length > 1 && (
+                            <div className="absolute top-1/2 left-0 right-0 flex justify-around items-center">
+                              <button 
+                                className="bg-indigo-600 text-white p-2 rounded-full" 
+                                onClick={() => handlePrevImage(postIndex)}
+                              >
+                                &#10094;
+                              </button>
+                              <button 
+                                className="bg-indigo-600 text-white p-2 rounded-full" 
+                                onClick={() => handleNextImage(postIndex)}
+                              >
+                                &#10095;
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-red-500">No images available</p>
+                      )}
+                    </div>
                   ) : (
-                    <p className="text-red-500">No file available</p>
+                    <p className="text-red-500">No files available</p>
                   )}
+                  
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-300">No posts available for this blog.</p>
+            <div className="flex justify-center items-center min-h-full">
+              <p className="text-center text-gray-300">No posts available for this blog.</p>
+            </div>
           )}
         </div>
       </div>

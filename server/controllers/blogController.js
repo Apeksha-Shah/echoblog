@@ -26,6 +26,20 @@ const getSpecificBlog = async (req, res) => {
     }
 };
 
+const getBlogByAuthor = async (req, res)=> {
+    try{
+        console.log(req.params.id);
+        const blogs = await Blog.find({author_id: req.params.id}).populate('author_id');
+        if(blogs.length === 0){
+            return res.status(404).json('No blogs found');
+        }
+        return res.json(blogs);
+    }catch(err){
+        res.status(400).json('Error:'+err.message);
+    }
+
+}
+
 const createBlog = async (req, res) => {
     const { title, author_id } = req.body;
     // console.log("outside try block");
@@ -68,4 +82,4 @@ const deleteBlog = async (req, res) => {
     }
 };
 
-export default { getAllBlogs, getSpecificBlog, createBlog, deleteBlog };
+export default { getAllBlogs, getSpecificBlog, createBlog, deleteBlog, getBlogByAuthor };

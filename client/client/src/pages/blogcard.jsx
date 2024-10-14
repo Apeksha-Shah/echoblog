@@ -1,56 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from React Router
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import { useScrollTrigger } from '@mui/material';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const BlogCard = () => {
-  const [blogs, setBlogs] = useState([]);
+const BlogCard = ({ blog, onFetchPosts, className }) => {
 
-  const fetchBlogs = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/blogs/");
-      setBlogs(response.data);
-    } catch (err) {
+  const [isClicked, setIsClicked] = useState(false);
+
+  const displayBlog = async () => {
+    setIsClicked(true);
+    try{
+      const response = await axios.get(`http://localhost:5000/api/posts/blog/${blog._id}`);
+      onFetchPosts(response.data, blog._id);
+    }catch(err){
       console.log(err);
     }
-  };
-
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
+  }
 
   return (
-    <>
-      <Grid container spacing={2}>
-        {blogs.map((blog) => {
-          return (
-            <Grid item xs={12} sm={6} md={4} key={blog.id}>
-              <Link to={`/blog/${blog._id}`} style={{ textDecoration: 'none' }}>
-                <Card sx={{ maxWidth: 345, cursor: 'pointer' }}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {blog.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {blog.excerpt}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">Learn More</Button>
-                  </CardActions>
-                </Card>
-              </Link>
-              <br />
-            </Grid>
-          );
-        })}
-      </Grid>
-    </>
+    <div className={`${className} transform transition-transform duration-300 hover:scale-105`}>
+      <h3 className="text-xl font-semibold mb-3 text-indigo-400">{blog.title}</h3>
+      <p className="text-gray-300 mb-3">{blog.excerpt}</p>
+      <div className="text-sm text-gray-400 mb-2">
+        Published by: {blog.author} on {new Date(blog.created_at).toLocaleDateString()}
+      </div>
+      <button className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md" onClick={displayBlog}>
+        Read More
+      </button>
+    </div>
   );
 };
 

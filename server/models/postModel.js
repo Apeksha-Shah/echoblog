@@ -42,9 +42,8 @@ const postSchema = new mongoose.Schema({
       message: 'Tags cannot exceed 10'
     }
   },
-  file: {
-    type: String,
-    required: [true, 'File is required']
+  files: { 
+    type: [String],
   }
 });
 

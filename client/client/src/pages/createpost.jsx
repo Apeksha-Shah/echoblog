@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header';
 import axios from 'axios';
@@ -7,58 +7,73 @@ const CreatePost = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const blogId = location.state?.blogId;
+  const token = localStorage.getItem('token');
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [publishDate, setPublishDate] = useState('');
 
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
-  const handleFileUpload = (e) => setFile(e.target.files[0]);
+  const handleFileUpload = (e) => setFiles(e.target.files);
   const handleCategoryChange = (e) => setCategory(e.target.value);
   const handleTagsChange = (e) => setTags(e.target.value);
   const handlePublishDateChange = (e) => setPublishDate(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const token = localStorage.getItem('token');
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      const author_id = decodedToken.id;
+        const token = localStorage.getItem('token');
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const author_id = decodedToken.id;
 
-      await axios.post('http://localhost:5000/api/posts/', {
-        title,
-        content,
-        category,
-        tags: tags.split(',').map((tag) => tag.trim()),
-        publishDate,
-        file,
-        author_id,
-        blogId
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('category', category);
+        formData.append('tags', tags.split(',').map((tag) => tag.trim()));
+        formData.append('publishDate', publishDate);
+        formData.append('author_id', author_id);
+        formData.append('blogId', blogId);
 
-      resetFields();
-      navigate('/home');
+        Array.from(files).forEach((file) => {
+            formData.append('files', file); 
+        });
+
+     
+        await axios.post('http://localhost:5000/api/posts/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}` 
+            }
+        });
+
+        resetFields();
+        navigate(`/blog/${blogId}`, { state: { blogId } });
     } catch (err) {
-      console.log(err);
+        console.log(err);
     }
-  };
+};
+
 
   const resetFields = () => {
     setTitle('');
     setContent('');
-    setFile(null);
+    setFiles([]);
     setCategory('');
     setTags('');
     setPublishDate('');
   };
+
+  useEffect(()=>{
+    if(!token){
+      navigate('/Login');
+    }
+  },[])
 
   return (
     <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white min-h-screen">
@@ -78,9 +93,10 @@ const CreatePost = () => {
             <input
               type="file"
               accept="image/*,video/*"
-              name='file'
+              name='files'
               onChange={handleFileUpload}
-              className="file:mr-5 text-sm bg-gray-700 text-white focus:outline-none" // Removed border styles
+              className="file:mr-5 text-sm bg-gray-700 text-white focus:outline-none"
+              multiple
             />
           </div>
 

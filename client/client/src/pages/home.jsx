@@ -28,7 +28,7 @@ const Home = () => {
     };
 
     if (token) {
-      fetchUser();
+      // fetchUser();
     } else {
       navigate("/login");
     }
@@ -49,19 +49,21 @@ const Home = () => {
           Share your thoughts, ideas, and stories with the world. Connect with fellow bloggers and readers!
         </p>
 
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 ">
           <button
             onClick={() => navigate("/create-blog")} 
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
           >
             Create Blog
           </button>
+          <button
+            onClick={() => navigate("/blogList")} 
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
+          >
+            Reading List 
+          </button>
         </div>
 
-        {/* Render the list of blogs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <BlogCard className="bg-white shadow-md rounded-lg p-4 transition duration-200 hover:shadow-lg" />
-        </div>
       </div>
     </div>
   );

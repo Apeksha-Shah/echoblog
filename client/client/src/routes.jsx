@@ -7,6 +7,7 @@ import VerifyOTP from './pages/verifyotp'
 import CreatePost from './pages/createpost'
 import CreateBlog from './pages/createblog'
 import BlogDetail from './pages/blogdetail'
+import BlogList from './pages/blogList'
 
 function Routing() {
   return (
@@ -19,6 +20,7 @@ function Routing() {
             <Route path="/create-post" element={<CreatePost/>} />
             <Route path="/create-blog" element = {<CreateBlog/>}></Route>
             <Route path="/blog/:id" element = {<BlogDetail/>}></Route>
+            <Route path='/blogList' element = {<BlogList/>}></Route>
         </Routes>
      </Router>
   )

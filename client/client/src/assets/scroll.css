@@ -1,0 +1,19 @@
+/* custom.css */
+/* Thin scrollbar styles */
+::-webkit-scrollbar {
+    width: 1px; /* Set the width of the scrollbar */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Background of the scrollbar track */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: white; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Round edges for the scrollbar thumb */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.7); /* Slightly change color on hover */
+  }
+  
