@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
+
 
 const BlogDetail = () => {
   const navigate = useNavigate();
@@ -98,6 +101,18 @@ const BlogDetail = () => {
     });
   };
 
+  const handleLikes = () => {
+
+  }
+
+  const handleShare = () => {
+
+  }
+
+  const handleComments = () => {
+
+  }
+
   return (
     <>
       <Header />
@@ -133,70 +148,79 @@ const BlogDetail = () => {
           <h2 className="text-3xl font-bold text-gray-200 text-center mb-4">Posts</h2>
           {posts.length > 0 ? (
             <div className="grid grid-cols-1 gap-6">
-              {posts.map((post, postIndex) => (
-                <div 
-                  key={post._id} 
-                  className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
-                  style={{ fontSize: '0.98rem' }} 
-                >
-                  <div className='flex justify-end'>
-                      <button className="text-blue-400 
-                                  bg-gradient-to-r from-gray-800
-                                   to-gray-900 py-1 px-3 rounded-md 
-                                   hover:bg-blue-700 hover:text-white
-                                    transition-all duration-200"
-                              onClick={() => navigate(`/edit-post/${post._id}`,{ state: {post}})}
-                      >Edit Post</button></div>
-
-                    <h3 className="text-xl font-semibold mb-3 text-indigo-400 -mt-4">{post.title}</h3>
-                  <p className="text-gray-300 mb-3">{post.content.substring(0, 150)}...</p>
-                  <div className="text-sm text-gray-400 mb-2">
-                    Published on: {new Date(post.created_at || post.publishDate).toLocaleDateString()}
-                  </div>
-                  <div className="flex justify-center flex-wrap gap-2 mb-4">
-                    {post.tags?.map((tag, index) => (
-                      <span key={index} className="bg-indigo-700 text-white px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  {post.files && post.files.length > 0 ? ( 
-                    <div className="flex justify-center mb-3">
-                      {post.files.some(file => file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.jpeg')) ? (
-                        <div className="relative">
-                          <img
-                            src={`http://localhost:5000/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
-                            alt={`Post Image ${currentImageIndexes[postIndex] + 1}`}
-                            className="w-1/2 h-auto rounded-lg shadow-md inline"
-                          />
-                          {post.files.length > 1 && (
-                            <div className="absolute top-1/2 left-0 right-0 flex justify-around items-center">
-                              <button 
-                                className="bg-indigo-600 text-white p-2 rounded-full" 
-                                onClick={() => handlePrevImage(postIndex)}
-                              >
-                                &#10094;
-                              </button>
-                              <button 
-                                className="bg-indigo-600 text-white p-2 rounded-full" 
-                                onClick={() => handleNextImage(postIndex)}
-                              >
-                                &#10095;
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-red-500">No images available</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-red-500">No files available</p>
-                  )}
-                  
+            {posts.map((post, postIndex) => (
+              <div 
+                key={post._id} 
+                className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
+                style={{ fontSize: '0.98rem' }} 
+              >
+                <div className="flex justify-end">
+                  <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
+                          onClick={() => navigate(`/edit-post/${post._id}`, { state: { post }})}
+                  >
+                    Edit Post
+                  </button>
                 </div>
-              ))}
-            </div>
+                <h3 className="text-xl font-semibold mb-3 text-indigo-400 -mt-4">{post.title}</h3>
+                <p className="text-gray-300 mb-3">{post.content.substring(0, 150)}...</p>
+                <div className="text-sm text-gray-400 mb-2">
+                  Published on: {new Date(post.created_at || post.publishDate).toLocaleDateString()}
+                </div>
+                <div className="flex justify-center flex-wrap gap-2 mb-4">
+                  {post.tags?.map((tag, index) => (
+                    <span key={index} className="bg-indigo-700 text-white px-3 py-1 rounded-full text-sm">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                {post.files && post.files.length > 0 ? ( 
+                  <div className="flex justify-center mb-3">
+                    {post.files.some(file => file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.jpeg')) ? (
+                      <div className="relative">
+                        <img
+                          src={`http://localhost:5000/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
+                          alt={`Post Image ${currentImageIndexes[postIndex] + 1}`}
+                          className="w-1/2 h-auto rounded-lg shadow-md inline"
+                        />
+                        {post.files.length > 1 && (
+                          <div className="absolute top-1/2 left-0 right-0 flex justify-around items-center">
+                            <button className="bg-indigo-600 text-white p-2 rounded-full" onClick={() => handlePrevImage(postIndex)}>
+                              &#10094;
+                            </button>
+                            <button className="bg-indigo-600 text-white p-2 rounded-full" onClick={() => handleNextImage(postIndex)}>
+                              &#10095;
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-red-500">No images available</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-red-500">No files available</p>
+                )}
+                
+                <div className="flex justify-center items-center mt-4 gap-2 p-2">
+                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500 transition-colors duration-200"
+                          onClick={() => handleLikes()}>
+                    <FontAwesomeIcon icon={faThumbsUp} /> 
+                  </button>
+                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-green-500 transition-colors duration-200"
+                          onClick={()=> handleComments()}>
+                    <FontAwesomeIcon icon={faComment} />
+                  </button>
+                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-purple-500 transition-colors duration-200"
+                          onClick={()=> handleShare()}>
+                    <FontAwesomeIcon icon={faShare} />
+                  </button>
+                </div>
+                
+              </div>
+            ))}
+          </div>          
+
+
           ) : (
             <div className="flex justify-center items-center min-h-full">
               <p className="text-center text-gray-300">No posts available for this blog.</p>

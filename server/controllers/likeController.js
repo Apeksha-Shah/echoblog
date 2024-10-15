@@ -2,6 +2,7 @@ import Like from '../models/likeModel.js';
 
 
 const addLike = async (req, res) => {
+    console.log(req.body);
     const { post_id, user_id } = req.body;
 
     if (!post_id || !user_id) {
@@ -25,7 +26,7 @@ const addLike = async (req, res) => {
 
 
 const removeLike = async (req, res) => {
-    const { post_id, user_id } = req.body;
+    const { post_id, user_id } = req.query;
 
     if (!post_id || !user_id) {
         return res.status(400).json('Post ID and User ID are required');
@@ -56,11 +57,12 @@ const getLikesForPost = async (req, res) => {
 
 
 const getLikesByUser = async (req, res) => {
-    const { user_id } = req.params;
+    const { author_id } = req.params;
 
     try {
-        const likes = await Like.find( user_id ).populate('post_id', 'title'); 
-        res.json(likes);
+        const likes = await Like.find( author_id );
+        const postIds = likes.map(like => like.post_id);
+        res.json(postIds);
     } catch (err) {
         res.status(500).json('Error: ' + err.message);
     }

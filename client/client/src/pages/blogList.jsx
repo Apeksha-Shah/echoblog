@@ -5,6 +5,10 @@ import Header from './Header';
 import { IconButton } from '@mui/material';
 import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
 import '../assets/scroll.css'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
+import '../assets/button_animation.css';
+
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -13,6 +17,11 @@ const BlogList = () => {
   const [searchTerm, setSearchTerm] = useState(''); 
   const [sidebarOpen, setSidebarOpen] = useState(true); 
   const [currentImageIndexes, setCurrentImageIndexes] = useState([]);
+  const [likedPosts, setLikedPosts] = useState({});
+  const [jump, setJump] = useState({});
+  const token = localStorage.getItem('token');
+  const decodedToken = JSON.parse(atob(token.split('.')[1]));
+  const author_id = decodedToken.id;
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -24,13 +33,31 @@ const BlogList = () => {
       }
     };
 
+    const fetchLikedPosts = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
+        const likedPostIds = response.data;
+        setLikedPosts(prevLikedPosts => {
+          const newLikedPosts = {...prevLikedPosts};
+          likedPostIds.forEach(id => {
+            newLikedPosts[id] = true; 
+          });
+          return newLikedPosts;
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+
     fetchBlogs();
+    fetchLikedPosts();
   }, []);
 
   const handleFetchedPost = (posts) => {
     setPosts(posts);
     setSelectedBlog(true); 
-    setCurrentImageIndexes(Array(posts.length).fill(0)); // Initialize image indexes for the new posts
+    setCurrentImageIndexes(Array(posts.length).fill(0));
   };
 
   const filteredBlogs = blogs.filter(blog =>
@@ -57,6 +84,54 @@ const BlogList = () => {
       return newIndexes;
     });
   };
+ 
+      const handleLikes = async (post) => {
+        // console.log(post._id);
+
+        const isLiked = likedPosts[post._id] || false; 
+        if (!isLiked) {
+            try {
+                await axios.post(`http://localhost:5000/api/likes`, {
+                    post_id: post._id,
+                    user_id: author_id
+                });
+                setLikedPosts((prev) => ({ ...prev, [post._id]: true })); 
+                setJump(prev => ({ ...prev, [post._id]: true }));
+                setTimeout(() => {
+                  setJump(prev => ({ ...prev, [post._id]: false })); 
+                }, 300);
+            } catch (err) {
+                console.log(err);
+            }
+        } else {
+          // console.log('unliking');
+            try {
+                await axios.delete(`http://localhost:5000/api/likes`, {
+                    params:
+                    {
+                      post_id: post._id,
+                      user_id: author_id 
+                    }
+                });
+                setLikedPosts((prev) => ({ ...prev, [post._id]: false }));
+                setJump(prev => ({ ...prev, [post._id]: true }));
+                setTimeout(() => {
+                  setJump(prev => ({ ...prev, [post._id]: false })); // Reset jump state
+                }, 300); 
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    };
+
+
+  const handleComments = () => {
+
+  }
+
+  const handleShare = () => {
+
+  }
 
   return (
     <>
@@ -122,7 +197,6 @@ const BlogList = () => {
                         ))}
                       </div>
 
-                      {/* Carousel for images */}
                       {post.files && post.files.length > 0 ? (
                         <div className="flex flex-col items-center">
                           <img
@@ -136,13 +210,13 @@ const BlogList = () => {
                                 onClick={() => handlePrevImage(postIndex)}
                                 className="bg-indigo-600 text-white px-3 py-1 rounded-md"
                               >
-                                &lt; {/* Use < symbol */}
+                                &lt; 
                               </button>
                               <button
                                 onClick={() => handleNextImage(postIndex)}
                                 className="bg-indigo-600 text-white px-3 py-1 rounded-md"
                               >
-                                &gt; {/* Use > symbol */}
+                                &gt; 
                               </button>
                             </div>
                           )}
@@ -150,6 +224,28 @@ const BlogList = () => {
                       ) : (
                         <p className="text-red-500">No files available</p>
                       )}
+                      <div className="flex justify-center items-center mt-4 gap-2 p-2">
+                      <button 
+                            className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
+                            onClick={() => handleLikes(post)}
+                        >
+   
+                            <FontAwesomeIcon icon={faThumbsUp} /> 
+                        </button>
+                        <button 
+                            className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-green-500 transition-colors duration-200"
+                            onClick={() => handleComments(post)}
+                        >
+                            <FontAwesomeIcon icon={faComment} />
+                        </button>
+                        <button 
+                            className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-purple-500 transition-colors duration-200"
+                            onClick={() => handleShare(post)}
+                        >
+                            <FontAwesomeIcon icon={faShare} />
+                        </button>
+                      </div>
+
                     </div>
                   ))}
                 </div>
