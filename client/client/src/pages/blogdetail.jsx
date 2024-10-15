@@ -15,7 +15,10 @@ const BlogDetail = () => {
   const [currentBlogId, setCurrentBlogId] = useState(null);
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
+  const [likedPosts, setLikedPosts] = useState({});
+  const [jump, setJump] = useState({});
   const [title, setTitle] = useState('');
+  const [numLikes, setNumLikes] = useState({});
   
   const { blogId: initialBlogId } = location.state || {};
 
@@ -101,9 +104,92 @@ const BlogDetail = () => {
     });
   };
 
-  const handleLikes = () => {
+  useEffect(() => {
+    
+    const fetchLikedPosts = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
+        const likedPostIds = response.data;
+        setLikedPosts(prevLikedPosts => {
+          const newLikedPosts = {...prevLikedPosts};
+          likedPostIds.forEach(id => {
+            newLikedPosts[id] = true; 
+          });
+          return newLikedPosts;
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchLikedPosts();
 
+  },[])
+
+  useEffect(()=> {
+    const fetchNumLikes = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/likes/num-likes`);
+        const likesData = response.data.reduce((acc, likeData) => {
+          acc[likeData._id] = likeData.count;
+          return acc;
+        }, {});
+        console.log(likesData);
+        setNumLikes(likesData);
+      } catch (err) {
+        console.log(err);
+      }
   }
+
+  fetchNumLikes();
+
+  },[numLikes])
+  
+  const handleLikes = async (post) => {
+    // console.log(post._id);
+
+    const isLiked = likedPosts[post._id] || false; 
+    if (!isLiked) {
+        try {
+            await axios.post(`http://localhost:5000/api/likes`, {
+                post_id: post._id,
+                user_id: author_id
+            });
+            setLikedPosts((prev) => ({ ...prev, [post._id]: true })); 
+            setJump(prev => ({ ...prev, [post._id]: true }));
+            setNumLikes((prev) => ({ 
+              ...prev, 
+              [post._id]: (prev[post._id] || 0) + 1 
+            }));
+            setTimeout(() => {
+              setJump(prev => ({ ...prev, [post._id]: false })); 
+            }, 300);
+        } catch (err) {
+            console.log(err);
+        }
+    } else {
+      // console.log('unliking');
+        try {
+            await axios.delete(`http://localhost:5000/api/likes`, {
+                params:
+                {
+                  post_id: post._id,
+                  user_id: author_id 
+                }
+            });
+            setLikedPosts((prev) => ({ ...prev, [post._id]: false }));
+            setJump(prev => ({ ...prev, [post._id]: true }));
+            setNumLikes((prev) => ({ 
+              ...prev, 
+              [post._id]: (prev[post._id] || 0) - 1 
+            }));
+            setTimeout(() => {
+              setJump(prev => ({ ...prev, [post._id]: false })); // Reset jump state
+            }, 300); 
+        } catch (err) {
+            console.log(err);
+        }
+    }
+};
 
   const handleShare = () => {
 
@@ -202,20 +288,28 @@ const BlogDetail = () => {
                 )}
                 
                 <div className="flex justify-center items-center mt-4 gap-2 p-2">
-                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500 transition-colors duration-200"
-                          onClick={() => handleLikes()}>
-                    <FontAwesomeIcon icon={faThumbsUp} /> 
-                  </button>
-                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-green-500 transition-colors duration-200"
-                          onClick={()=> handleComments()}>
-                    <FontAwesomeIcon icon={faComment} />
-                  </button>
-                  <button className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-purple-500 transition-colors duration-200"
-                          onClick={()=> handleShare()}>
-                    <FontAwesomeIcon icon={faShare} />
-                  </button>
-                </div>
-                
+                      <button 
+                            className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
+                            onClick={() => handleLikes(post)}
+                        >
+   
+                            <FontAwesomeIcon icon={faThumbsUp} className='mr-1' /> 
+                            Liked by {numLikes[post._id] || 0} 
+                        </button>
+                        <button 
+                            className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-green-500 transition-colors duration-200"
+                            onClick={() => handleComments(post)}
+                        >
+                            <FontAwesomeIcon icon={faComment} />
+                        </button>
+                        <button 
+                            className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-purple-500 transition-colors duration-200"
+                            onClick={() => handleShare(post)}
+                        >
+                            <FontAwesomeIcon icon={faShare} />
+                        </button>
+                      </div>
+
               </div>
             ))}
           </div>          

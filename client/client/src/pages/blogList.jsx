@@ -19,6 +19,7 @@ const BlogList = () => {
   const [currentImageIndexes, setCurrentImageIndexes] = useState([]);
   const [likedPosts, setLikedPosts] = useState({});
   const [jump, setJump] = useState({});
+  const [numLikes, setNumLikes] = useState({});
   const token = localStorage.getItem('token');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
@@ -27,7 +28,11 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/blogs');
-        setBlogs(response.data);
+        console.log("blogs",response.data);
+        const filteredBlogs = response.data.filter(blog => {
+          return blog.author_id === null || blog.author_id._id !== author_id;
+        });
+        setBlogs(filteredBlogs);
       } catch (err) {
         console.log(err);
       }
@@ -49,10 +54,29 @@ const BlogList = () => {
       }
     };
 
-
+    
     fetchBlogs();
     fetchLikedPosts();
   }, []);
+
+  useEffect(()=> {
+    const fetchNumLikes = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/likes/num-likes`);
+        const likesData = response.data.reduce((acc, likeData) => {
+          acc[likeData._id] = likeData.count;
+          return acc;
+        }, {});
+        console.log(likesData);
+        setNumLikes(likesData);
+      } catch (err) {
+        console.log(err);
+      }
+  }
+
+  fetchNumLikes();
+
+  },[numLikes])
 
   const handleFetchedPost = (posts) => {
     setPosts(posts);
@@ -86,7 +110,6 @@ const BlogList = () => {
   };
  
       const handleLikes = async (post) => {
-        // console.log(post._id);
 
         const isLiked = likedPosts[post._id] || false; 
         if (!isLiked) {
@@ -95,10 +118,23 @@ const BlogList = () => {
                     post_id: post._id,
                     user_id: author_id
                 });
-                setLikedPosts((prev) => ({ ...prev, [post._id]: true })); 
-                setJump(prev => ({ ...prev, [post._id]: true }));
+                setLikedPosts((prev) => ({ 
+                  ...prev, 
+                  [post._id]: true 
+                })); 
+                setNumLikes((prev) => ({ 
+                  ...prev, 
+                  [post._id]: (prev[post._id] || 0) + 1 
+                }));
+                setJump(prev => ({ 
+                  ...prev, 
+                  [post._id]: true 
+                }));
                 setTimeout(() => {
-                  setJump(prev => ({ ...prev, [post._id]: false })); 
+                  setJump(prev => ({ 
+                    ...prev, 
+                    [post._id]: false 
+                })); 
                 }, 300);
             } catch (err) {
                 console.log(err);
@@ -113,10 +149,19 @@ const BlogList = () => {
                       user_id: author_id 
                     }
                 });
-                setLikedPosts((prev) => ({ ...prev, [post._id]: false }));
-                setJump(prev => ({ ...prev, [post._id]: true }));
+                setLikedPosts((prev) => ({ 
+                  ...prev, 
+                  [post._id]: false 
+                }));
+                setNumLikes((prev) => ({
+                   ...prev,
+                  [post._id]: (prev[post._id] || 0) - 1 
+                }));
+                setJump(prev => ({ 
+                  ...prev, 
+                  [post._id]: true }));
                 setTimeout(() => {
-                  setJump(prev => ({ ...prev, [post._id]: false })); // Reset jump state
+                  setJump(prev => ({ ...prev, [post._id]: false })); 
                 }, 300); 
             } catch (err) {
                 console.log(err);
@@ -229,8 +274,8 @@ const BlogList = () => {
                             className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
                             onClick={() => handleLikes(post)}
                         >
-   
-                            <FontAwesomeIcon icon={faThumbsUp} /> 
+                            <FontAwesomeIcon icon={faThumbsUp} className='mr-1' /> 
+                            Liked by {numLikes[post._id] || 0} 
                         </button>
                         <button 
                             className="text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-green-500 transition-colors duration-200"

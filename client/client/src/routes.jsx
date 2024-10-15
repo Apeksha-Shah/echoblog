@@ -15,6 +15,7 @@ function Routing() {
         <Routes>
             <Route path="/login" element = {<Login/>}></Route>
             <Route path="/register" element = {<Register/>}></Route>
+            <Route path="/" element={<Home/>}></Route>
             <Route path='/home' element = {<Home/>}></Route>
             <Route path='/verifyotp' element = {<VerifyOTP/>}></Route>
             <Route path="/create-post" element={<CreatePost/>} />
