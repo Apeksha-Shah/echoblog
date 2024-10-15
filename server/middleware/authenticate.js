@@ -10,13 +10,16 @@ const authenticate = (req,res,next) => {
     }
 
     const [bearer,token] = authheader.split(' ');
+    // console.log(token);
     if(bearer !== 'Bearer' || !token){
-        return res.status(401).json({message:'Invalid token'});
+        return res.status(401).json({message:'token required'});
     }
 
     jwt.verify(token,secretKey,(err,user)=>{
+        // console.log(secretKey,user);
         if(err){
-            return res.status(403).json({error:'Invalid token'});
+            console.log("Invalid token");
+            return res.status(403).json({ message: 'Invalid token, please log in again' });
         }
         req.user = user;
         next();

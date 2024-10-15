@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
+import {motion} from 'framer-motion';
 
 
 const BlogDetail = () => {
@@ -200,8 +201,13 @@ const BlogDetail = () => {
   }
 
   return (
-    <>
-      <Header />
+    <motion.div 
+      className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-800"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+    > 
+    <Header/>
       <div className="min-h-screen bg-gradient-to-r from-gray-800 to-gray-900 text-white flex flex-col">
         <div className="mt-6 flex flex-col md:flex-row justify-center items-center mb-4">
           <div className="w-full md:w-1/4 pr-2 mb-4 md:mb-0">
@@ -322,7 +328,7 @@ const BlogDetail = () => {
           )}
         </div>
       </div>
-    </>
+      </motion.div>
   );
 };
 

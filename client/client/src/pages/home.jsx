@@ -5,6 +5,7 @@ import Header from "./Header";
 import '../App.css'; // Ensure you import your CSS file
 import BlogCard from "./BlogCard";
 import logo from '../assets/logo.png';
+import {motion} from 'framer-motion';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -35,7 +36,13 @@ const Home = () => {
   }, [token, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-800">
+    <motion.div 
+      className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-800"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+    >
+    
       <Header />
       <div className="container mx-auto p-6">
         <div className="flex justify-center my-4">
@@ -65,7 +72,7 @@ const Home = () => {
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 

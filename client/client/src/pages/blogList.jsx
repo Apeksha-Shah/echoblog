@@ -8,6 +8,7 @@ import '../assets/scroll.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
 import '../assets/button_animation.css';
+import {motion} from 'framer-motion';
 
 
 const BlogList = () => {
@@ -179,7 +180,12 @@ const BlogList = () => {
   }
 
   return (
-    <>
+    <motion.div 
+      className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-800"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+    > 
       <Header />
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 px-4 flex h-screen relative overflow-hidden">
         
@@ -304,7 +310,7 @@ const BlogList = () => {
         </div>
         
       </div>
-    </>
+    </motion.div>
   );
 };
 

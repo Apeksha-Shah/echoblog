@@ -8,6 +8,7 @@ import CreatePost from './pages/createpost'
 import CreateBlog from './pages/createblog'
 import BlogDetail from './pages/blogdetail'
 import BlogList from './pages/blogList'
+import Profile from './pages/profile'
 
 function Routing() {
   return (
@@ -23,6 +24,7 @@ function Routing() {
             <Route path="/blog/:id" element = {<BlogDetail/>}></Route>
             <Route path='/blogList' element = {<BlogList/>}></Route>
             <Route path='/edit-post/:id' element={<CreatePost isEditing = {true}/>}/>
+            <Route path='/profile' element = {<Profile/>}></Route>
         </Routes>
      </Router>
   )

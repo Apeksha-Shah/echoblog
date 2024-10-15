@@ -28,6 +28,28 @@ const userSchema = new mongoose.Schema({
     minlength: [6, 'Password must be at least 6 characters long'],
     maxlength: [1024, 'Password cannot exceed 1024 characters']
   },
+  firstName: {
+    type: String,
+    minlength: [1, 'First name must be at least 1 character long'],
+    maxlength: [50, 'First name cannot exceed 50 characters']
+  },
+  lastName: {
+    type: String,
+    minlength: [1, 'Last name must be at least 1 character long'],
+    maxlength: [50, 'Last name cannot exceed 50 characters']
+  },
+  bio: {
+    type: String,
+    maxlength: [500, 'Bio cannot exceed 500 characters']
+  },
+  profilePicture: {
+    type: String,
+    default: 'https://example.com/default-profile.png' 
+  },
+  dateOfBirth: {
+    type: Date,
+    required: [true, 'Date of birth is required']
+  },
   role_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role',

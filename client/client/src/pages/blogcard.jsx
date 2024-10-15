@@ -19,7 +19,7 @@ const BlogCard = ({ blog, onFetchPosts, className }) => {
   return (
     <div className={`${className} transform transition-transform duration-300 hover:scale-105`}>
       <h3 className="text-xl font-semibold mb-3 text-indigo-400">{blog.title}</h3>
-      <p className="text-gray-300 mb-3">{blog.excerpt}</p>
+      <p className="text-gray-300 mb-3">{blog.content}</p>
       <div className="text-sm text-gray-400 mb-2">
         Published by: {blog.author} on {new Date(blog.created_at).toLocaleDateString()}
       </div>

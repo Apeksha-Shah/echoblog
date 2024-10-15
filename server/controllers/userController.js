@@ -17,13 +17,23 @@ const getAllUsers = (req,res)=>{
     })
 }
 
-const getSpecificUser = (req,res)=>{
-    const user = User.findById(req.params.id).then((user)=>{
+const getSpecificUser = async (req, res) => {
+    try {
+        console.log(req.params.id);
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        console.log(user);
         res.json(user);
-    }).catch((err)=>{
-        res.status(400).json('Error: '+err);
-    })
+    } catch (err) {
+        console.error(err); 
+        res.status(500).json({ message: 'Error fetching user data', error: err.message });
+    }
 }
+
 
 const login = async (req,res) => {
     const {email,password} = req.body;
@@ -133,18 +143,27 @@ const verifyOtp = async (req,res) => {
 const updateUser = async(req,res)=>{
     try{
         const user = await User.findById(req.params.id);
-        const {username,email,password,role_id} = req.body;
-        if(username){
-            user.username = username;
+        const {firstName,lastName,email,dateOfBirth,bio} = req.body;
+        if(firstName){
+            user.firstName = firstName;
         }
         if(email){
             user.email = email;
         }
-        if(password){
-            user.password = await bcrypt.hash(password,10);
+        if(dateOfBirth){
+            user.dateOfBirth = dateOfBirth;
         }
-        if(role_id){
-            user.role_id = role_id;
+        if(bio){
+            user.bio = bio;
+        }
+        if(lastName){
+            user.lastName = lastName;
+        }
+
+        // console.log(req.file);
+        const file = req.file;
+        if(file){
+            user.profilePicture = file.filename;
         }
         await user.save();
         res.status(201).json('User updated');
