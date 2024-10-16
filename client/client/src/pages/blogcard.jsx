@@ -1,8 +1,9 @@
-import { useScrollTrigger } from '@mui/material';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const BlogCard = ({ blog, onFetchPosts, className }) => {
+const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) => {
 
   const [isClicked, setIsClicked] = useState(false);
 
@@ -11,6 +12,15 @@ const BlogCard = ({ blog, onFetchPosts, className }) => {
     try{
       const response = await axios.get(`http://localhost:5000/api/posts/blog/${blog._id}`);
       onFetchPosts(response.data, blog._id);
+    }catch(err){
+      console.log(err);
+    }
+  }
+
+  const handleDelete = async () => {
+    try{
+      await axios.delete(`http://localhost:5000/api/blogs/${blog._id}`);
+      onDeleteBlog(blog._id);
     }catch(err){
       console.log(err);
     }
@@ -26,6 +36,12 @@ const BlogCard = ({ blog, onFetchPosts, className }) => {
       <button className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md" onClick={displayBlog}>
         Read More
       </button>
+      {isEditing && (
+        <button className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-md ml-2"
+                onClick={() => handleDelete()}>
+          <FontAwesomeIcon icon={faTrash}/> 
+        </button>
+      )}
     </div>
   );
 };

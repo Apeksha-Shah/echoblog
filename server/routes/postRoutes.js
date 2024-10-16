@@ -1,8 +1,6 @@
 import express from "express";
 import postController from "../controllers/postController.js";
 import multer from "multer";
-import fs from "fs";
-import path from "path";
 import storage from "../utils/fileUtils.js";
 const {getAllPosts,getSpecificPost,createPost,updatePost,deletePost, getAllPostsOfBlog} = postController;
 
@@ -15,14 +13,14 @@ postRoutes.get("/:id",getSpecificPost);
 
 postRoutes.post("/",upload, (req, res, next) => {
     console.log("POST / route hit.");
-    console.log(req.body); 
-    console.log(req.files);
+    // console.log(req.body); 
+    // console.log(req.files);
     next();  
 }, createPost);
 
 postRoutes.put("/:id",upload , (req,res,next)=>{
-    console.log("PUT / route hit.");
-    console.log(req.body);
+    // console.log("PUT / route hit.");
+    // console.log(req.body);
     next();
 },updatePost);
 

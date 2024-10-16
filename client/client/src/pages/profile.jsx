@@ -14,7 +14,8 @@ const Profile = () => {
 
   const [userDetails, setUserDetails] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false); 
-  const [file, setfile] = useState(null);
+  const [file, setFile] = useState(null);
+
   const fetchUserDetails = async () => {
     if (!token) {
       navigate('/login');
@@ -31,8 +32,7 @@ const Profile = () => {
         },
       });
       setUserDetails(response.data);
-      setfile(response.data.profilePicture);
-    //   console.log(response.data);
+      setFile(response.data.profilePicture);
     } catch (error) {
       if (error.response && error.response.status === 403) {
           navigate('/login');
@@ -44,7 +44,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchUserDetails();
-  }, [token,isModalOpen]); 
+  }, [token, isModalOpen]); 
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -72,10 +72,10 @@ const Profile = () => {
       <div className="container mx-auto p-6">
         <div className="flex justify-center my-4">
           <img
-            src={`http://localhost:5000/uploads/${file}` || profileimage}
+            src={file ? `http://localhost:5000/uploads/${file}` : profileimage}
             alt="Profile"
-            onChange={() => setfile(file)}
             className="h-40 w-40 rounded-full border-4 border-blue-400 shadow-lg hover:shadow-2xl transition-shadow"
+            onError={(e) => { e.target.src = profileimage; }}
           />
         </div>
 

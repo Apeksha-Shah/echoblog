@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
 import '../assets/button_animation.css';
 import {motion} from 'framer-motion';
+import CommentModal from './commentModal';
 
 
 const BlogList = () => {
@@ -24,60 +25,58 @@ const BlogList = () => {
   const token = localStorage.getItem('token');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
+  const [isCommentModalOpen, setCommentModalOpen] = useState(false);
+
+  const fetchBlogs = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/blogs');
+      const filteredBlogs = response.data.filter(blog => {
+        return blog.author_id === null || blog.author_id._id !== author_id;
+      });
+      setBlogs(filteredBlogs);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchLikedPosts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
+      const likedPostIds = response.data;
+      setLikedPosts(prevLikedPosts => {
+        const newLikedPosts = {...prevLikedPosts};
+        likedPostIds.forEach(id => {
+          newLikedPosts[id] = true; 
+        });
+        return newLikedPosts;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/blogs');
-        console.log("blogs",response.data);
-        const filteredBlogs = response.data.filter(blog => {
-          return blog.author_id === null || blog.author_id._id !== author_id;
-        });
-        setBlogs(filteredBlogs);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    const fetchLikedPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
-        const likedPostIds = response.data;
-        setLikedPosts(prevLikedPosts => {
-          const newLikedPosts = {...prevLikedPosts};
-          likedPostIds.forEach(id => {
-            newLikedPosts[id] = true; 
-          });
-          return newLikedPosts;
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    
     fetchBlogs();
     fetchLikedPosts();
   }, []);
 
-  useEffect(()=> {
-    const fetchNumLikes = async () => {
+  const fetchNumLikes = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/likes/num-likes`);
         const likesData = response.data.reduce((acc, likeData) => {
           acc[likeData._id] = likeData.count;
           return acc;
         }, {});
-        console.log(likesData);
+        // console.log(likesData);
         setNumLikes(likesData);
       } catch (err) {
         console.log(err);
       }
   }
 
-  fetchNumLikes();
-
-  },[numLikes])
+  useEffect(()=> {
+      fetchNumLikes();
+  },[jump])
 
   const handleFetchedPost = (posts) => {
     setPosts(posts);
@@ -172,6 +171,11 @@ const BlogList = () => {
 
 
   const handleComments = () => {
+    setCommentModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setCommentModalOpen(false);
 
   }
 
@@ -213,6 +217,7 @@ const BlogList = () => {
                       blog={blog}
                       onFetchPosts={handleFetchedPost}
                       className="bg-gray-800 text-white shadow-md rounded-lg p-4 transition duration-200 hover:shadow-lg cursor-pointer"
+                      isEditing={false}
                     />
                   </div>
                 ))}
@@ -275,6 +280,7 @@ const BlogList = () => {
                       ) : (
                         <p className="text-red-500">No files available</p>
                       )}
+                      <CommentModal isOpen={isCommentModalOpen} onClose={closeModal} post = {post} isauthor = {false}/>
                       <div className="flex justify-center items-center mt-4 gap-2 p-2">
                       <button 
                             className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}

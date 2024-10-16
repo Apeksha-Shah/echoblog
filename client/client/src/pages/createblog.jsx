@@ -10,7 +10,8 @@ const CreateBlog = () => {
   const [blogs, setBlogs] = useState([]);
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
-  console.log(author_id);
+  const [isdeleted, setisdeleted] = useState(false);
+  const [isCreated, setisCreated] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -24,9 +25,6 @@ const CreateBlog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      title,
-    });
 
     try {
       const response = await axios.post('http://localhost:5000/api/blogs/', {
@@ -35,6 +33,7 @@ const CreateBlog = () => {
       });
 
       resetFields();
+      setisCreated(true);
       navigate('/create-blog');
 
     } catch (err) {
@@ -43,24 +42,29 @@ const CreateBlog = () => {
   };
 
   const handleFetchedPost = (posts, blogId) => {
-    console.log(posts, blogId, blogs);
     navigate(`/blog/${blogId}`, { state: { blogId, posts, blogs}});
-  }
+  };
+  
+
+  const handleDeleteBlog = (blogId) => {
+    setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
+    setisdeleted(true);
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      try{
+      setisCreated(false);
+      try {
         const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
-        if(response.data){
+        if (response.data) {
           setBlogs(response.data);
         }
-      }catch(err){
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
     fetchBlogs();
-    console.log(blogs);
-  },[])
+  }, [author_id,isdeleted,isCreated]);
 
   const resetFields = () => {
     setTitle('');
@@ -76,7 +80,7 @@ const CreateBlog = () => {
             value={title}
             onChange={handleTitleChange}
             placeholder="Enter blog title"
-            className="text-2xl mb-5 p-3  rounded bg-gray-700 text-white focus:outline-none" // Updated styles
+            className="text-2xl mb-5 p-3 rounded bg-gray-700 text-white focus:outline-none" // Updated styles
             required
           />
 
@@ -99,14 +103,16 @@ const CreateBlog = () => {
         {
           blogs.length > 0 ? (
             <div className="flex justify-center">
-              <div className={`grid ${blogs.length % 2 === 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-6 w-1/2 mt-10`}>
+              <div className="grid grid-cols-1 gap-6 w-1/2 mt-10"> {/* Ensuring one column */}
                 {
                   blogs.map(blog => 
                     <div key={blog._id} className="border border-gray-600 rounded-lg">
                       <BlogCard
                         blog={blog}
                         onFetchPosts={handleFetchedPost}
+                        onDeleteBlog={handleDeleteBlog} 
                         className="bg-gray-800 text-white shadow-md rounded-lg p-4 transition duration-200 hover:shadow-lg cursor-pointer"
+                        isEditing={true}
                       />
                     </div>
                   )
@@ -117,7 +123,6 @@ const CreateBlog = () => {
             <p className="text-center text-gray-300">No blogs available.</p>
           )
         }
-
       </div>
     </div>
   );

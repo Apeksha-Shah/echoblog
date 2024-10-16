@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
 import {motion} from 'framer-motion';
+import CommentModal from './commentModal';
 
 
 const BlogDetail = () => {
@@ -20,6 +21,8 @@ const BlogDetail = () => {
   const [jump, setJump] = useState({});
   const [title, setTitle] = useState('');
   const [numLikes, setNumLikes] = useState({});
+  const [isCommentModalOpen, setCommentModalOpen] = useState(false);
+
   
   const { blogId: initialBlogId } = location.state || {};
 
@@ -105,6 +108,15 @@ const BlogDetail = () => {
     });
   };
 
+  const handleComments = () => {
+    setCommentModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setCommentModalOpen(false);
+
+  }
+
   useEffect(() => {
     
     const fetchLikedPosts = async () => {
@@ -143,7 +155,7 @@ const BlogDetail = () => {
 
   fetchNumLikes();
 
-  },[numLikes])
+  },[jump])
   
   const handleLikes = async (post) => {
     // console.log(post._id);
@@ -196,9 +208,18 @@ const BlogDetail = () => {
 
   }
 
-  const handleComments = () => {
-
+  const handleDeletePost = async (postId) => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      try {
+        await axios.delete(`http://localhost:5000/api/posts/${postId}`);
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+      } catch (err) {
+        console.error('Error deleting post:', err);
+        alert('Failed to delete post. Please try again.');
+      }
+    }
   }
+
 
   return (
     <motion.div 
@@ -246,11 +267,16 @@ const BlogDetail = () => {
                 className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
                 style={{ fontSize: '0.98rem' }} 
               >
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
                           onClick={() => navigate(`/edit-post/${post._id}`, { state: { post }})}
                   >
                     Edit Post
+                  </button>
+                  <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
+                          onClick={() => handleDeletePost(post._id)}
+                  >
+                    Delete Post
                   </button>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-indigo-400 -mt-4">{post.title}</h3>
@@ -293,6 +319,8 @@ const BlogDetail = () => {
                   <p className="text-red-500">No files available</p>
                 )}
                 
+                <CommentModal isOpen={isCommentModalOpen} onClose={closeModal} post = {post} isauthor={true}/>
+
                 <div className="flex justify-center items-center mt-4 gap-2 p-2">
                       <button 
                             className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
