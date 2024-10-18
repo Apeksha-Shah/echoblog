@@ -48,7 +48,6 @@ const userSchema = new mongoose.Schema({
   },
   dateOfBirth: {
     type: Date,
-    required: [true, 'Date of birth is required']
   },
   role_id: {
     type: mongoose.Schema.Types.ObjectId,

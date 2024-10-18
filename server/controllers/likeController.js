@@ -2,7 +2,6 @@ import Like from '../models/likeModel.js';
 
 
 const addLike = async (req, res) => {
-    console.log(req.body);
     const { post_id, user_id } = req.body;
 
     if (!post_id || !user_id) {
@@ -43,22 +42,11 @@ const removeLike = async (req, res) => {
     }
 };
 
-const getNumLikes = async (req,res) => {
-     try{
-        const likes = await Like.aggregate([
-            {$group: {_id: "$post_id", count: {$sum: 1}}}
-        ])
-        res.json(likes);
-     }catch(err){
-        res.status(500).json('Error: '+err.message);
-     }
-}
-
 const getLikesForPost = async (req, res) => {
     const { post_id } = req.params;
 
     try {
-        const likes = await Like.find(post_id).populate('user_id', 'username'); 
+        const likes = await Like.find({post_id}); 
         res.json(likes);
     } catch (err) {
         res.status(500).json('Error: ' + err.message);
@@ -67,10 +55,10 @@ const getLikesForPost = async (req, res) => {
 
 
 const getLikesByUser = async (req, res) => {
-    const { author_id } = req.params;
+    const { user_id } = req.params;
 
     try {
-        const likes = await Like.find( author_id );
+        const likes = await Like.find({user_id});
         const postIds = likes.map(like => like.post_id);
         res.json(postIds);
     } catch (err) {
@@ -78,4 +66,4 @@ const getLikesByUser = async (req, res) => {
     }
 };
 
-export default { addLike, removeLike, getLikesForPost, getLikesByUser, getNumLikes };
+export default { addLike, removeLike, getLikesForPost, getLikesByUser};

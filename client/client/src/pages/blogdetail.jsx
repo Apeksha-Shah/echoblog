@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
@@ -11,10 +11,9 @@ import CommentModal from './commentModal';
 const BlogDetail = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  const [currentBlogId, setCurrentBlogId] = useState(null);
+  const [currentBlogId, setCurrentBlogId] = useState('');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
   const [likedPosts, setLikedPosts] = useState({});
@@ -22,9 +21,8 @@ const BlogDetail = () => {
   const [title, setTitle] = useState('');
   const [numLikes, setNumLikes] = useState({});
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
-
-  
-  const { blogId: initialBlogId } = location.state || {};
+  const { id } = useParams();
+  const initialBlogId = id;
 
   useEffect(() => {
     if (!token) {
@@ -33,47 +31,64 @@ const BlogDetail = () => {
     setCurrentBlogId(initialBlogId);  
   }, [initialBlogId]);
 
+  const fetchPosts = async (blogid) => {
+    try {
+      // console.log(id);
+      // console.log(blogid);
+      const response = await axios.get(`http://localhost:5000/api/posts/blog/${blogid}`);
+      // console.log("Post fetch");
+      setPosts(response.data);
+        posts.forEach(
+        async (post) => {
+          try {
+            const LikebyPost = await axios.get(`http://localhost:5000/api/likes/post/${post._id}`);  // no of likes for each post
+            const PostLikedByUser = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`); 
+            
+            const isLiked = PostLikedByUser.data.includes(post._id);
+            
+            setNumLikes((prev) => ({ ...prev, [post._id]: LikebyPost.data.length }));
+            setLikedPosts((prev) => ({ ...prev, [post._id]: isLiked }));
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchBlogs = async () => {
+    // console.log("blog fetch");
+    try {
+      const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
+      if (response.data) {
+        setBlogs(response.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchTitle = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/blogs/${currentBlogId}`);
+      if (response.data) {
+        setTitle(response.data.title);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/posts/blog/${currentBlogId}`);
-        if (response.data) {
-          setPosts(response.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    const fetchBlogs = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
-        if (response.data) {
-          setBlogs(response.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    const fetchTitle = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/blogs/${currentBlogId}`);
-        if (response.data) {
-          setTitle(response.data.title);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
     if (currentBlogId) {
-      fetchPosts();
+      fetchPosts(currentBlogId);
       fetchTitle();
     }
-    fetchBlogs();  
-  }, [currentBlogId]);  
-
+    fetchBlogs();
+  }, [currentBlogId,title]);  
+  
   const handleBlogChange = (event) => {
     const selectedBlogId = event.target.value;
     setCurrentBlogId(selectedBlogId);  
@@ -117,92 +132,44 @@ const BlogDetail = () => {
 
   }
 
-  useEffect(() => {
-    
-    const fetchLikedPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
-        const likedPostIds = response.data;
-        setLikedPosts(prevLikedPosts => {
-          const newLikedPosts = {...prevLikedPosts};
-          likedPostIds.forEach(id => {
-            newLikedPosts[id] = true; 
-          });
-          return newLikedPosts;
+  const handleLike = async (post) => {
+    const isLiked = likedPosts[post._id];
+
+    try {
+      if (isLiked) 
+      {
+        await axios.delete(`http://localhost:5000/api/likes`, {
+          params: {
+             post_id: post._id, 
+             user_id: author_id 
+          }
         });
-      } catch (err) {
-        console.log(err);
+        setNumLikes((prev) => ({ ...prev, [post._id]: (prev[post._id] || 0) - 1 }));
+      } 
+      else 
+      {
+        await axios.post('http://localhost:5000/api/likes', {
+           post_id: post._id, 
+           user_id: author_id 
+        });
+        setNumLikes((prev) => ({ ...prev, [post._id]: (prev[post._id] || 0) + 1 }));
       }
-    };
-    fetchLikedPosts();
+      setLikedPosts((prev) => ({ 
+        ...prev, 
+        [post._id]: !isLiked 
+      }));
+      setJump((prev) => ({ 
+        ...prev, 
+        [post._id]: true
+      }));
+      setTimeout(() => {
+        setJump((prev) => ({ ...prev, [post._id]: false }));
+      }, 300); 
 
-  },[])
-
-  useEffect(()=> {
-    const fetchNumLikes = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/likes/num-likes`);
-        const likesData = response.data.reduce((acc, likeData) => {
-          acc[likeData._id] = likeData.count;
-          return acc;
-        }, {});
-        console.log(likesData);
-        setNumLikes(likesData);
-      } catch (err) {
-        console.log(err);
-      }
-  }
-
-  fetchNumLikes();
-
-  },[jump])
-  
-  const handleLikes = async (post) => {
-    // console.log(post._id);
-
-    const isLiked = likedPosts[post._id] || false; 
-    if (!isLiked) {
-        try {
-            await axios.post(`http://localhost:5000/api/likes`, {
-                post_id: post._id,
-                user_id: author_id
-            });
-            setLikedPosts((prev) => ({ ...prev, [post._id]: true })); 
-            setJump(prev => ({ ...prev, [post._id]: true }));
-            setNumLikes((prev) => ({ 
-              ...prev, 
-              [post._id]: (prev[post._id] || 0) + 1 
-            }));
-            setTimeout(() => {
-              setJump(prev => ({ ...prev, [post._id]: false })); 
-            }, 300);
-        } catch (err) {
-            console.log(err);
-        }
-    } else {
-      // console.log('unliking');
-        try {
-            await axios.delete(`http://localhost:5000/api/likes`, {
-                params:
-                {
-                  post_id: post._id,
-                  user_id: author_id 
-                }
-            });
-            setLikedPosts((prev) => ({ ...prev, [post._id]: false }));
-            setJump(prev => ({ ...prev, [post._id]: true }));
-            setNumLikes((prev) => ({ 
-              ...prev, 
-              [post._id]: (prev[post._id] || 0) - 1 
-            }));
-            setTimeout(() => {
-              setJump(prev => ({ ...prev, [post._id]: false })); // Reset jump state
-            }, 300); 
-        } catch (err) {
-            console.log(err);
-        }
+    } catch (err) {
+      console.log(err);
     }
-};
+  };
 
   const handleShare = () => {
 
@@ -324,9 +291,9 @@ const BlogDetail = () => {
                 <div className="flex justify-center items-center mt-4 gap-2 p-2">
                       <button 
                             className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
-                            onClick={() => handleLikes(post)}
+                            onClick={() => handleLike(post)}
                         >
-   
+
                             <FontAwesomeIcon icon={faThumbsUp} className='mr-1' /> 
                             Liked by {numLikes[post._id] || 0} 
                         </button>

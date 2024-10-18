@@ -28,7 +28,6 @@ const getSpecificBlog = async (req, res) => {
 
 const getBlogByAuthor = async (req, res)=> {
     try{
-        console.log(req.params.id);
         const blogs = await Blog.find({author_id: req.params.id}).populate('author_id');
         if(blogs.length === 0){
             return res.status(404).json('No blogs found');

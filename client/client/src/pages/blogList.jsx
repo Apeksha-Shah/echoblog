@@ -19,13 +19,13 @@ const BlogList = () => {
   const [searchTerm, setSearchTerm] = useState(''); 
   const [sidebarOpen, setSidebarOpen] = useState(true); 
   const [currentImageIndexes, setCurrentImageIndexes] = useState([]);
-  const [likedPosts, setLikedPosts] = useState({});
   const [jump, setJump] = useState({});
-  const [numLikes, setNumLikes] = useState({});
   const token = localStorage.getItem('token');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const author_id = decodedToken.id;
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
+  const [likedPosts, setLikedPosts] = useState({});
+  const [numLikes, setNumLikes] = useState({}); 
 
   const fetchBlogs = async () => {
     try {
@@ -39,49 +39,32 @@ const BlogList = () => {
     }
   };
 
-  const fetchLikedPosts = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`);
-      const likedPostIds = response.data;
-      setLikedPosts(prevLikedPosts => {
-        const newLikedPosts = {...prevLikedPosts};
-        likedPostIds.forEach(id => {
-          newLikedPosts[id] = true; 
-        });
-        return newLikedPosts;
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  
 
   useEffect(() => {
     fetchBlogs();
-    fetchLikedPosts();
   }, []);
 
-  const fetchNumLikes = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/likes/num-likes`);
-        const likesData = response.data.reduce((acc, likeData) => {
-          acc[likeData._id] = likeData.count;
-          return acc;
-        }, {});
-        // console.log(likesData);
-        setNumLikes(likesData);
-      } catch (err) {
-        console.log(err);
-      }
-  }
-
-  useEffect(()=> {
-      fetchNumLikes();
-  },[jump])
 
   const handleFetchedPost = (posts) => {
     setPosts(posts);
-    setSelectedBlog(true); 
+    setSelectedBlog(true);
     setCurrentImageIndexes(Array(posts.length).fill(0));
+
+   
+    posts.forEach(async (post) => {
+      try {
+        const LikebyPost = await axios.get(`http://localhost:5000/api/likes/post/${post._id}`);  // no of likes for each post
+        const PostLikedByUser = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`); 
+        
+        const isLiked = PostLikedByUser.data.includes(post._id);
+        
+        setNumLikes((prev) => ({ ...prev, [post._id]: LikebyPost.data.length }));
+        setLikedPosts((prev) => ({ ...prev, [post._id]: isLiked }));
+      } catch (err) {
+        console.log(err);
+      }
+    });
   };
 
   const filteredBlogs = blogs.filter(blog =>
@@ -109,66 +92,45 @@ const BlogList = () => {
     });
   };
  
-      const handleLikes = async (post) => {
+  const handleLike = async (post) => {
+    const isLiked = likedPosts[post._id];
 
-        const isLiked = likedPosts[post._id] || false; 
-        if (!isLiked) {
-            try {
-                await axios.post(`http://localhost:5000/api/likes`, {
-                    post_id: post._id,
-                    user_id: author_id
-                });
-                setLikedPosts((prev) => ({ 
-                  ...prev, 
-                  [post._id]: true 
-                })); 
-                setNumLikes((prev) => ({ 
-                  ...prev, 
-                  [post._id]: (prev[post._id] || 0) + 1 
-                }));
-                setJump(prev => ({ 
-                  ...prev, 
-                  [post._id]: true 
-                }));
-                setTimeout(() => {
-                  setJump(prev => ({ 
-                    ...prev, 
-                    [post._id]: false 
-                })); 
-                }, 300);
-            } catch (err) {
-                console.log(err);
-            }
-        } else {
-          // console.log('unliking');
-            try {
-                await axios.delete(`http://localhost:5000/api/likes`, {
-                    params:
-                    {
-                      post_id: post._id,
-                      user_id: author_id 
-                    }
-                });
-                setLikedPosts((prev) => ({ 
-                  ...prev, 
-                  [post._id]: false 
-                }));
-                setNumLikes((prev) => ({
-                   ...prev,
-                  [post._id]: (prev[post._id] || 0) - 1 
-                }));
-                setJump(prev => ({ 
-                  ...prev, 
-                  [post._id]: true }));
-                setTimeout(() => {
-                  setJump(prev => ({ ...prev, [post._id]: false })); 
-                }, 300); 
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    };
+    try {
+      if (isLiked) 
+      {
+        await axios.delete(`http://localhost:5000/api/likes`, {
+          params: {
+             post_id: post._id, 
+             user_id: author_id 
+          }
+        });
+        setNumLikes((prev) => ({ ...prev, [post._id]: (prev[post._id] || 0) - 1 }));
+      } 
+      else 
+      {
+        await axios.post('http://localhost:5000/api/likes', {
+           post_id: post._id, 
+           user_id: author_id 
+        });
+        setNumLikes((prev) => ({ ...prev, [post._id]: (prev[post._id] || 0) + 1 }));
+      }
+      setLikedPosts((prev) => ({ 
+        ...prev, 
+        [post._id]: !isLiked 
+      }));
+      setJump((prev) => ({ 
+        ...prev, 
+        [post._id]: true
+      }));
 
+      setTimeout(() => {
+        setJump((prev) => ({ ...prev, [post._id]: false }));
+      }, 300); 
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleComments = () => {
     setCommentModalOpen(true);
@@ -284,7 +246,7 @@ const BlogList = () => {
                       <div className="flex justify-center items-center mt-4 gap-2 p-2">
                       <button 
                             className={`transition-colors duration-200 px-3 py-1 rounded-md ${likedPosts[post._id] ? 'text-blue-500 bg-gradient-to-r from-gray-800 to-gray-900' : 'text-gray-400 bg-gradient-to-r from-gray-800 to-gray-900 hover:text-blue-500'} ${jump[post._id] ? 'jump-animation' : ''}`}
-                            onClick={() => handleLikes(post)}
+                            onClick={() => handleLike(post)}
                         >
                             <FontAwesomeIcon icon={faThumbsUp} className='mr-1' /> 
                             Liked by {numLikes[post._id] || 0} 
