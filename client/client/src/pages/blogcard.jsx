@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) => {
 
   const [isClicked, setIsClicked] = useState(false);
+  const navigate = useNavigate();
 
   const displayBlog = async () => {
     setIsClicked(true);
@@ -26,6 +28,11 @@ const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) =>
     }
   }
 
+  const handleViewAuthor = () => {
+    console.log(blog);
+     navigate(`/author/${blog.author_id._id}`);
+  }
+
   return (
     <div className={`${className} transform transition-transform duration-300 hover:scale-105`}>
       <h3 className="text-xl font-semibold mb-3 text-indigo-400">{blog.title}</h3>
@@ -42,6 +49,13 @@ const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) =>
           <FontAwesomeIcon icon={faTrash}/> 
         </button>
       )}
+      {!isEditing && (
+        <button className = "bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md ml-2"
+                onClick={() => handleViewAuthor()}>
+          View Author
+        </button>
+      )
+      }
     </div>
   );
 };

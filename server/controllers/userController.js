@@ -15,13 +15,11 @@ const getAllUsers = (req,res)=>{
 }
 const getSpecificUser = async (req, res) => {
     try {
-        console.log(req.params.id);
         const user = await User.findById(req.params.id);
         
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        console.log(user);
         res.json(user);
     } catch (err) {
         console.error(err); 

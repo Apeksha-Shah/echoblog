@@ -163,13 +163,13 @@ const BlogList = () => {
 
         <div className={`transition-transform duration-300 ${sidebarOpen ? 'w-1/4' : 'w-0 overflow-hidden'}`}>
           <div className={`p-4 ${sidebarOpen ? 'block' : 'hidden'} max-h-[80vh] overflow-y-auto`}>
-            <input
+            {/* <input
               type="text"
               placeholder="Search Blogs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full p-2 rounded bg-gray-700 text-white mb-4"
-            />
+            /> */}
 
             {filteredBlogs.length > 0 ? (
               <div className="grid grid-cols-1 gap-6">

@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../App.css'; 
 import { motion } from 'framer-motion';
 import { FaRegEnvelope, FaBirthdayCake } from 'react-icons/fa'; 
 import profileimage from '../assets/profile1.jpg';
 import EditProfileModal from './editProfileModal'; 
 
-const Profile = () => {
+const Profile = ({isEditing}) => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   const [userDetails, setUserDetails] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [file, setFile] = useState(null);
+  const {id} = useParams();
 
   const fetchUserDetails = async () => {
     if (!token) {
@@ -23,7 +24,11 @@ const Profile = () => {
     }
 
     const decodedToken = JSON.parse(atob(token.split('.')[1]));
-    const author_id = decodedToken.id;
+    let author_id = decodedToken.id;
+
+    if(!isEditing) {
+       author_id = id;
+    }
 
     try {
       const response = await axios.get(`http://localhost:5000/api/users/${author_id}`, {
@@ -42,9 +47,17 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUserDetails();
-  }, [token, isModalOpen]); 
+  if(isEditing)
+  {
+    useEffect(() => {
+      fetchUserDetails();
+    }, [token, isModalOpen]); 
+  }
+  else{
+    useEffect(() => {
+      fetchUserDetails();
+    },[])
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -101,21 +114,28 @@ const Profile = () => {
           </p>
         </div>
 
-        <div className="text-center mb-6 mt-4">
-          <button
-            onClick={openModal}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2 shadow transition-shadow duration-300"
-          >
-            Edit Profile
-          </button>
-        </div>
+        { isEditing && (
+            <div className="text-center mb-6 mt-4">
+              <button
+                onClick={openModal}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2 shadow transition-shadow duration-300"
+              >
+                Edit Profile
+              </button>
+            </div>
+        )}
 
-        <EditProfileModal 
-          isOpen={isModalOpen} 
-          onClose={closeModal} 
-          userDetails={userDetails} 
-          onUpdateUserDetails={handleUpdateUserDetails} 
-        />
+        {isEditing && (
+            <EditProfileModal 
+              isOpen={isModalOpen} 
+              onClose={closeModal} 
+              userDetails={userDetails} 
+              onUpdateUserDetails={handleUpdateUserDetails} 
+            />
+        )}
+
+        
+
       </div>
     </motion.div>
   );
