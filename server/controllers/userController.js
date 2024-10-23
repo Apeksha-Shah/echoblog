@@ -41,6 +41,9 @@ const login = async (req,res) => {
         // console.log(isMatch);
         if(isMatch){
             const token = generateToken(user);
+            if(user.role_id.toString()==='66c0e80c4c7bcb4632a34ba2'){
+                return res.status(200).json({mes:'Logged in successfully', token:token, user: user, userType: 'admin'});
+            }
             res.status(200).json({mes:'Logged in successfully', token:token, user: user});
         }
         else{

@@ -38,7 +38,10 @@ function Login() {
             resetForm();
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("User", response.data.user);
-            navigate("/home"); 
+            if(response.data.userType === 'admin')
+                navigate("/admin");
+            else
+                navigate("/home"); 
         } catch (err) {
             if (err.response) {
                 setErrors(err.response.data);

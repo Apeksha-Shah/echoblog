@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUserCircle, FaHome, FaPen, FaBars } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-function Header() {
+function Header({isAdmin}) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,6 +64,7 @@ function Header() {
           isMenuOpen ? 'block' : 'hidden'
         } md:flex md:items-center space-y-4 md:space-y-0 md:space-x-6 mt-4 md:mt-0 w-full md:w-auto md:bg-transparent bg-gray-800 absolute md:relative top-16 left-0 md:top-auto md:left-auto z-10 md:z-auto p-4 md:p-0`}
       >
+        { (!isAdmin) && (
         <NavLink
           to="/home"
           className={({ isActive }) =>
@@ -73,6 +74,7 @@ function Header() {
           <FaHome className="text-lg" />
           <span>Home</span>
         </NavLink>
+        ) }
         <NavLink
           to="/profile"
           className={({ isActive }) =>

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'; 
 import axios from 'axios';
 
-const CommentModal = ({ isOpen, onClose, post, isauthor }) => {
+const CommentModal = ({ isOpen, onClose, post, isauthor,isAdmin }) => {
   const [message, setMessage] = useState('');
   const [comments, setComments] = useState([]);
   const token = localStorage.getItem('token');
@@ -93,16 +93,23 @@ const CommentModal = ({ isOpen, onClose, post, isauthor }) => {
             ))}
           </div>
 
-          <textarea
-            className="w-full p-3 bg-gray-50 text-gray-800 rounded-md mb-4 shadow-inner border border-gray-300"
-            placeholder="Write a comment..."
-            rows="4"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 shadow-lg transform transition-transform duration-200 hover:scale-105" type="submit">
-            Add comment
-          </button>
+          {
+            !isAdmin && (
+              <div>
+                <textarea
+                  className="w-full p-3 bg-gray-50 text-gray-800 rounded-md mb-4 shadow-inner border border-gray-300"
+                  placeholder="Write a comment..."
+                  rows="4"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 shadow-lg transform transition-transform duration-200 hover:scale-105" type="submit">
+                  Add comment
+                </button>
+              </div>
+              )
+          }
+          
         </div>
       </div>
     </form>

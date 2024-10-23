@@ -23,6 +23,7 @@ const BlogDetail = () => {
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
   const { id } = useParams();
   const initialBlogId = id;
+  const {isAdmin} = useLocation().state;
 
   useEffect(() => {
     if (!token) {
@@ -197,6 +198,7 @@ const BlogDetail = () => {
     > 
     <Header/>
       <div className="min-h-screen bg-gradient-to-r from-gray-800 to-gray-900 text-white flex flex-col">
+        {!isAdmin && (
         <div className="mt-6 flex flex-col md:flex-row justify-center items-center mb-4">
           <div className="w-full md:w-1/4 pr-2 mb-4 md:mb-0">
             <select 
@@ -223,6 +225,7 @@ const BlogDetail = () => {
             </button>
           </div>
         </div>
+        )}
 
         <div className="flex-grow w-full p-4">
           <h2 className="text-3xl font-bold text-gray-200 text-center mb-4">Posts</h2>
@@ -234,18 +237,20 @@ const BlogDetail = () => {
                 className="bg-gray-800 border border-gray-700 rounded-lg shadow-md p-3 mx-32"
                 style={{ fontSize: '0.98rem' }} 
               >
-                <div className="flex justify-end gap-2">
-                  <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
-                          onClick={() => navigate(`/edit-post/${post._id}`, { state: { post }})}
-                  >
-                    Edit Post
-                  </button>
-                  <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
-                          onClick={() => handleDeletePost(post._id)}
-                  >
-                    Delete Post
-                  </button>
-                </div>
+                {!isAdmin && (
+                  <div className="flex justify-end gap-2">
+                    <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
+                            onClick={() => navigate(`/edit-post/${post._id}`, { state: { post }})}
+                    >
+                      Edit Post
+                    </button>
+                    <button className="text-blue-400 bg-gradient-to-r from-gray-800 to-gray-900 py-1 px-3 rounded-md hover:bg-blue-700 hover:text-white transition-all duration-200"
+                            onClick={() => handleDeletePost(post._id)}
+                    >
+                      Delete Post
+                    </button>
+                  </div>
+                )}
                 <h3 className="text-xl font-semibold mb-3 text-indigo-400 -mt-4">{post.title}</h3>
                 <p className="text-gray-300 mb-3">{post.content.substring(0, 150)}...</p>
                 <div className="text-sm text-gray-400 mb-2">
@@ -285,8 +290,9 @@ const BlogDetail = () => {
                 ) : (
                   <p className="text-red-500">No files available</p>
                 )}
-                
-                <CommentModal isOpen={isCommentModalOpen} onClose={closeModal} post = {post} isauthor={true}/>
+                {
+                  isAdmin ? (<CommentModal isOpen={isCommentModalOpen} onClose={closeModal} post = {post} isauthor={true} isAdmin={true}/>) : (<CommentModal isOpen={isCommentModalOpen} onClose={closeModal} post = {post} isauthor={true}/>)
+                }
 
                 <div className="flex justify-center items-center mt-4 gap-2 p-2">
                       <button 
