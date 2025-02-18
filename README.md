@@ -1,44 +1,77 @@
-# EchoBlog
+# 🚀 EchoBlog
 
-## Description
+## 📝 Description
 
-EchoBlog is a MERN stack application. It utilizes MongoDB for the database, Express.js for the server, React.js for the client, and Node.js as the runtime environment.
+EchoBlog is a **feature-rich** blogging platform built with the **MERN** stack (**MongoDB, Express.js, React.js, and Node.js**). It allows users to create and interact with blog posts while ensuring secure authentication and user verification.
 
-## Prerequisites
+## 📌 Features
 
-Before you begin, ensure you have met the following requirements:
+✔️ **User Authentication** (🔑 Login & 🔓 Signup)  
+✔️ **JWT-based Authentication** (🔐 Secure API access)  
+✔️ **Email Verification** (📧 Using Nodemailer)  
+✔️ **Blog Post Management** (📝 Create, Read, Update, Delete)  
+✔️ **Like & Unlike Posts** (❤️ Interact with posts)  
+✔️ **Commenting System** (💬 Add, edit, and delete comments)  
+✔️ **User Profile Management** (👤 Update profile details)  
 
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- [MongoDB](https://www.mongodb.com/) (running locally or use a cloud service like MongoDB Atlas)
-- [Git](https://git-scm.com/) (optional, for version control)
+---
 
-## Installation
+## 🛠 Prerequisites
 
-### 1. Clone the repository
+Before you begin, ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v14 or higher)  
+- [MongoDB](https://www.mongodb.com/) (Local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))  
+- [Git](https://git-scm.com/) (Optional for version control)  
+
+---
+
+## 📥 Installation Guide
+
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd echoblog
 ```
 
-### 2. Install server dependencies
+### 2️⃣ Install Server Dependencies
 
 ```bash
 cd server
-npm install dotenv bcrypt body-parser nodemailer cors
+npm install dotenv bcrypt body-parser nodemailer cors jsonwebtoken express mongoose
 ```
 
-### 3. Install client side dependencies
-npm install axios
-npm install react-router-dom
+### 3️⃣ Install Client Dependencies
 
+```bash
+cd client
+npm install axios react-router-dom
+```
 
-### 3. Configure environment variables
+### 4️⃣ Configure Environment Variables
 
 ```bash
 PORT=<your-port-number>
 MONGO_URL=<your-mongo-db-connection-string>
-EMAIL=<Your_email>
-PASSWORD=<APP_PASSWORD>
+JWT_SECRET=<your-jwt-secret>
+EMAIL=<your-email>
+PASSWORD=<your-app-password>
 ```
+---
 
+## 📌 Tech Stack
+
+**Frontend**: React.js, React Router  
+**Backend**: Node.js, Express.js  
+**Database**: MongoDB, Mongoose  
+**Authentication**: JWT, Bcrypt  
+**Email Services**: Nodemailer  
+
+---
+
+## 📧 Contact
+For any queries, feel free to reach out:
+✉️ Email: apekshashah029@gmail.com
+
+🔗 Happy Coding! 🚀
