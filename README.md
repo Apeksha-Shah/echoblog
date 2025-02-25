@@ -1,28 +1,18 @@
 # 🚀 EchoBlog
 
-## 📝 Description
+##  Description
 
 EchoBlog is a **feature-rich** blogging platform built with the **MERN** stack (**MongoDB, Express.js, React.js, and Node.js**). It allows users to create and interact with blog posts while ensuring secure authentication and user verification.
 
-## 📌 Features
+##  Features
 
-✔️ **User Authentication** (🔑 Login & 🔓 Signup)  
-✔️ **JWT-based Authentication** (🔐 Secure API access)  
-✔️ **Email Verification** (📧 Using Nodemailer)  
-✔️ **Blog Post Management** (📝 Create, Read, Update, Delete)  
-✔️ **Like & Unlike Posts** (❤️ Interact with posts)  
-✔️ **Commenting System** (💬 Add, edit, and delete comments)  
-✔️ **User Profile Management** (👤 Update profile details)  
-
----
-
-## 🛠 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v14 or higher)  
-- [MongoDB](https://www.mongodb.com/) (Local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))  
-- [Git](https://git-scm.com/) (Optional for version control)  
+✔️ **User Authentication**  
+✔️ **JWT-based Authentication**  
+✔️ **Email Verification**  
+✔️ **Blog Post Management**  
+✔️ **Like & Unlike Posts**    
+✔️ **Commenting System**  
+✔️ **User Profile Management**  
 
 ---
 
@@ -35,21 +25,7 @@ git clone <repository-url>
 cd echoblog
 ```
 
-### 2️⃣ Install Server Dependencies
-
-```bash
-cd server
-npm install dotenv bcrypt body-parser nodemailer cors jsonwebtoken express mongoose
-```
-
-### 3️⃣ Install Client Dependencies
-
-```bash
-cd client
-npm install axios react-router-dom
-```
-
-### 4️⃣ Configure Environment Variables
+### 2️⃣ Configure Environment Variables
 
 ```bash
 PORT=<your-port-number>
@@ -69,6 +45,17 @@ PASSWORD=<your-app-password>
 **Email Services**: Nodemailer  
 
 ---
+
+## Screenshots
+
+![Image](https://github.com/user-attachments/assets/4b9bd7b9-d9be-4663-8fcf-bb0e05a78262)
+
+![Image](https://github.com/user-attachments/assets/16f9eb43-3cf7-42f1-b8c5-3f37bd67fbc5) 
+
+![Image](https://github.com/user-attachments/assets/72e1c2c4-1a41-4e8e-a5b4-a85dac8f3822)  
+
+![Image](https://github.com/user-attachments/assets/3c36e3b4-7d59-47fe-a554-db70cfd642d7)  
+
 
 ## 📧 Contact
 For any queries, feel free to reach out:
