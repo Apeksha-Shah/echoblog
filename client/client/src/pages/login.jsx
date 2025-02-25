@@ -2,6 +2,7 @@ import React, { useReducer, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import '@fortawesome/fontawesome-free/css/all.css';
+import apiClient from "../axiosClient";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -30,7 +31,7 @@ function Login() {
         setSuccessMessage({});
 
         try {
-            const response = await axios.post("http://localhost:5000/auth/login", {
+            const response = await apiClient.post("/auth/login", {
                 email: state.email,
                 password: state.password
             });

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import BlogCard from './BlogCard';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../axiosClient';
 
 const AdminHome = () => {
     const [blogs, setBlogs] = useState([]);
@@ -23,7 +24,7 @@ const AdminHome = () => {
     
     const fetchBlogs = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/blogs');
+            const response = await apiClient.get(`/api/blogs`);
             console.log(response.data);
             setBlogs(response.data);
         } catch (err) {

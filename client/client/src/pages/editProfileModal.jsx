@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import apiClient from '../axiosClient';
 
 const EditProfileModal = ({ isOpen, onClose, userDetails, onUpdateUserDetails }) => {
   if (!isOpen) return null;
@@ -32,8 +33,8 @@ const EditProfileModal = ({ isOpen, onClose, userDetails, onUpdateUserDetails })
     }
 
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/users/${userDetails._id}`,
+      const response = await apiClient.put(
+        `/api/users/${userDetails._id}`,
         formData,
         {
           headers: {

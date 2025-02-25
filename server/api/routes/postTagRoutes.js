@@ -1,5 +1,5 @@
 import express from 'express';
-import postTagController from '../controllers/postTagController.js';
+import postTagController from '../../controllers/postTagController.js';
 
 const { addTagToPost, removeTagFromPost, getTagsForPost, getPostsForTag } = postTagController;
 const postTagRoutes = express.Router();

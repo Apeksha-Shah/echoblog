@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import secretKey from '../config/jwtConfig.js';
+import secretKey from '../api/config/jwtConfig.js';
 const generateToken = (User) => {
     const userobj = {
         id:User.id,

@@ -1,5 +1,5 @@
 import express from 'express';
-import mediaController from '../controllers/mediaController.js';
+import mediaController from '../../controllers/mediaController.js';
 
 const { createMedia, getMediaForPost, updateMedia, deleteMedia } = mediaController;
 const mediaRoutes = express.Router();

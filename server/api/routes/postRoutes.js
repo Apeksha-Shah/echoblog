@@ -1,7 +1,7 @@
 import express from "express";
-import postController from "../controllers/postController.js";
+import postController from "../../controllers/postController.js";
 import multer from "multer";
-import storage from "../utils/fileUtils.js";
+import storage from "../../utils/fileUtils.js";
 const {getAllPosts,getSpecificPost,createPost,updatePost,deletePost, getAllPostsOfBlog} = postController;
 
 const postRoutes = express.Router();

@@ -10,9 +10,11 @@ import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icon
 import '../assets/button_animation.css';
 import {motion} from 'framer-motion';
 import CommentModal from './commentModal';
+import apiClient from '../axiosClient';
 
 
 const BlogList = () => {
+  const baseURL = apiClient.defaults.baseURL;
   const [blogs, setBlogs] = useState([]);
   const [posts, setPosts] = useState([]);
   const [selectedBlog, setSelectedBlog] = useState(false); 
@@ -29,7 +31,7 @@ const BlogList = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/blogs');
+      const response = await apiClient.get('/api/blogs');
       const filteredBlogs = response.data.filter(blog => {
         return blog.author_id === null || blog.author_id._id !== author_id;
       });
@@ -54,8 +56,8 @@ const BlogList = () => {
    
     posts.forEach(async (post) => {
       try {
-        const LikebyPost = await axios.get(`http://localhost:5000/api/likes/post/${post._id}`);  // no of likes for each post
-        const PostLikedByUser = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`); 
+        const LikebyPost = await apiClient.get(`/api/likes/post/${post._id}`);  // no of likes for each post
+        const PostLikedByUser = await apiClient.get(`/api/likes/user/${author_id}`); 
         
         const isLiked = PostLikedByUser.data.includes(post._id);
         
@@ -98,7 +100,7 @@ const BlogList = () => {
     try {
       if (isLiked) 
       {
-        await axios.delete(`http://localhost:5000/api/likes`, {
+        await apiClient.delete(`/api/likes`, {
           params: {
              post_id: post._id, 
              user_id: author_id 
@@ -108,7 +110,7 @@ const BlogList = () => {
       } 
       else 
       {
-        await axios.post('http://localhost:5000/api/likes', {
+        await apiClient.post('/api/likes', {
            post_id: post._id, 
            user_id: author_id 
         });
@@ -218,7 +220,7 @@ const BlogList = () => {
                       {post.files && post.files.length > 0 ? (
                         <div className="flex flex-col items-center">
                           <img
-                            src={`http://localhost:5000/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
+                            src={`${baseURL}/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
                             alt={`Post Image ${currentImageIndexes[postIndex] + 1}`}
                             className="w-1/2 h-auto rounded-lg shadow-md mb-2"
                           />

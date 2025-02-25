@@ -19,6 +19,7 @@ import cors from 'cors';
 import blogRoutes from './routes/blogRoutes.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import serverless from 'serverless-http';
 
 // Get __dirname for ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +41,7 @@ app.use(cors(corsOption));
 
 connectDB();
 
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 // middleware to serve static files
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
@@ -69,6 +70,8 @@ app.use((req, res, next) => {
 });
   
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+export default serverless(app);

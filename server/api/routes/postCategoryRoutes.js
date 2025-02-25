@@ -1,5 +1,5 @@
 import express from 'express';
-import postCategoryController from '../controllers/postCategoryController.js';
+import postCategoryController from '../../controllers/postCategoryController.js';
 
 const { addCategoryToPost, removeCategoryFromPost, getCategoriesForPost, getPostsForCategory } = postCategoryController;
 const postCategoryRoutes = express.Router();

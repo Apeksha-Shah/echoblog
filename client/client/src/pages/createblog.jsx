@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import axios from 'axios';
-import BlogCard from './BlogCard';
+import apiClient from '../axiosClient';
+
 
 const CreateBlog = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const CreateBlog = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/blogs/', {
+      const response = await apiClient.post('/api/blogs/', {
         title,
         author_id
       });
@@ -55,7 +56,7 @@ const CreateBlog = () => {
     const fetchBlogs = async () => {
       setisCreated(false);
       try {
-        const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
+        const response = await apiClient.get(`/api/blogs/author/${author_id}`);
         if (response.data) {
           setBlogs(response.data);
         }

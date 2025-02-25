@@ -1,5 +1,5 @@
 import express from 'express';
-import permissionController from '../controllers/permissionController.js';
+import permissionController from '../../controllers/permissionController.js';
 
 const { createPermission, getAllPermissions, getPermissionById, updatePermission, deletePermission } = permissionController;
 const permissionRoutes = express.Router();

@@ -1,5 +1,5 @@
 import express from 'express';
-import viewController from '../controllers/viewController.js';
+import viewController from '../../controllers/viewController.js';
 
 const { recordView, getPostViews, getUserViews } = viewController;
 const viewRoutes = express.Router();

@@ -4,6 +4,7 @@ import { Link, Navigate, useNavigate,useLocation } from "react-router-dom";
 import axios from "axios";
 import '@fortawesome/fontawesome-free/css/all.css'
 import '../assets/verifyotp.css';
+import apiClient from "../axiosClient";
 
 const reducer = (state,action) => {
     switch(action.type){
@@ -32,7 +33,7 @@ function VerifyOTP(){
      e.preventDefault();
 
      try{
-        const response = await axios.post("http://localhost:5000/auth/verifyotp",{
+        const response = await apiClient.post("auth/verifyotp",{
             otp: state.otp.toString(),
             email
         });

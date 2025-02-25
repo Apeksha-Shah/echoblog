@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import transporter from "../nodeMailer/Mail.js";
 import authUtils from "../utils/authUtils.js";
-import generateOTP from "../config/generateOTP.js";
+import generateOTP from "../api/config/generateOTP.js";
 const { generateToken,generateRefreshToken,verifyToken } = authUtils;
 const otpcache = {};
 const getAllUsers = (req,res)=>{

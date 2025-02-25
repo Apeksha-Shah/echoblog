@@ -7,8 +7,10 @@ import { motion } from 'framer-motion';
 import { FaRegEnvelope, FaBirthdayCake } from 'react-icons/fa'; 
 import profileimage from '../assets/profile1.jpg';
 import EditProfileModal from './editProfileModal'; 
+import apiClient from '../axiosClient';
 
 const Profile = ({isEditing}) => {
+  const baseURL = apiClient.defaults.baseURL;
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ const Profile = ({isEditing}) => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${author_id}`, {
+      const response = await apiClient.get(`/api/users/${author_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +87,7 @@ const Profile = ({isEditing}) => {
       <div className="container mx-auto p-6">
         <div className="flex justify-center my-4">
           <img
-            src={file ? `http://localhost:5000/uploads/${file}` : profileimage}
+            src={file ? `${baseURL}/uploads/${file}` : profileimage}
             alt="Profile"
             className="h-40 w-40 rounded-full border-4 border-blue-400 shadow-lg hover:shadow-2xl transition-shadow"
             onError={(e) => { e.target.src = profileimage; }}

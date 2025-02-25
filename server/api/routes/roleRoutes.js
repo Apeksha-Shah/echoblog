@@ -1,5 +1,5 @@
 import express from "express";
-import roleController from "../controllers/roleController.js";
+import roleController from "../../controllers/roleController.js";
 const {getAllRoles,createRole} = roleController;
 
 const roleRoutes = express.Router();

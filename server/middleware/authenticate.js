@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import authUtils from '../utils/authUtils.js';
-import secretKey from '../config/jwtConfig.js';
+import secretKey from '../api/config/jwtConfig.js';
 
 const authenticate = (req,res,next) => {
     const authheader = req.header('Authorization');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header';
 import axios from 'axios';
+import apiClient from '../axiosClient';
 
 const CreatePost = ({ isEditing }) => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const CreatePost = ({ isEditing }) => {
 
     const fetchCategoryName = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/categories/${post.category_ids}`);
+            const response = await apiClient.get(`/api/categories/${post.category_ids}`);
             setCategoryName(response.data.category_name);
             setCategory(response.data.category_name);
         } catch (err) {
@@ -80,14 +81,14 @@ const CreatePost = ({ isEditing }) => {
             });
 
             if (isEditing) {
-                await axios.put(`http://localhost:5000/api/posts/${post._id}`, formData, {
+                await apiClient.put(`/api/posts/${post._id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,
                     },
                 });
             } else {
-                await axios.post('http://localhost:5000/api/posts/', formData, {
+                await apiClient.post('/api/posts/', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,

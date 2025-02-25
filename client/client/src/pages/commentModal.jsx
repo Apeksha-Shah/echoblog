@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'; 
 import axios from 'axios';
+import apiClient from '../axiosClient';
 
 const CommentModal = ({ isOpen, onClose, post, isauthor,isAdmin }) => {
   const [message, setMessage] = useState('');
@@ -12,7 +13,7 @@ const CommentModal = ({ isOpen, onClose, post, isauthor,isAdmin }) => {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/comments/post/${post._id}`);
+      const response = await apiClient.get(`/api/comments/post/${post._id}`);
       const data = response.data;
       setComments(data);
     } catch (err) {
@@ -29,7 +30,7 @@ const CommentModal = ({ isOpen, onClose, post, isauthor,isAdmin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/comments', {
+      const response = await apiClient.post('/api/comments', {
         post_id: post._id,
         content: message,
         user_id: author_id,
@@ -47,7 +48,7 @@ const CommentModal = ({ isOpen, onClose, post, isauthor,isAdmin }) => {
   const handleDelete = async (commentId) => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/comments/${commentId}`);
+        await apiClient.delete(`/api/comments/${commentId}`);
         setComments(comments.filter((comment) => comment._id !== commentId));
       } catch (err) {
         console.error('Error deleting comment:', err);

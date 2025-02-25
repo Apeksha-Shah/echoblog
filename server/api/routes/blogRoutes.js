@@ -1,5 +1,5 @@
 import express from "express";
-import blogController from "../controllers/blogController.js";
+import blogController from "../../controllers/blogController.js";
 const {getAllBlogs,getSpecificBlog,createBlog,deleteBlog, getBlogByAuthor} = blogController;
 
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import apiClient from "../axiosClient";
 
 function Register() {
   const [email, setEmail] = React.useState("");
@@ -24,7 +25,7 @@ function Register() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/register", {
+      const response = await apiClient.post("/register", {
         username,
         email,
         password,

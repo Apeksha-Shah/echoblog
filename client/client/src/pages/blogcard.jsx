@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../axiosClient';
 
 const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) => {
 
@@ -12,7 +13,7 @@ const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) =>
   const displayBlog = async () => {
     setIsClicked(true);
     try{
-      const response = await axios.get(`http://localhost:5000/api/posts/blog/${blog._id}`);
+      const response = await apiClient.get(`/api/posts/blog/${blog._id}`);
       onFetchPosts(response.data, blog._id);
     }catch(err){
       console.log(err);
@@ -21,7 +22,7 @@ const BlogCard = ({ blog, onFetchPosts, className, isEditing, onDeleteBlog }) =>
 
   const handleDelete = async () => {
     try{
-      await axios.delete(`http://localhost:5000/api/blogs/${blog._id}`);
+      await apiClient.delete(`/api/blogs/${blog._id}`);
       onDeleteBlog(blog._id);
     }catch(err){
       console.log(err);

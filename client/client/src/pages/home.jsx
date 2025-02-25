@@ -6,6 +6,7 @@ import '../App.css'; // Ensure you import your CSS file
 import BlogCard from "./BlogCard";
 import logo from '../assets/logo.png';
 import {motion} from 'framer-motion';
+import apiClient from "../axiosClient";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Home = () => {
         navigate("/login");
       }
       try {
-        const response = await axios.get("http://localhost:5000/api/users/", {
+        const response = await apiClient.get("/api/users/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

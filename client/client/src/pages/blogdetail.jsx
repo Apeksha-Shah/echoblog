@@ -6,9 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
 import {motion} from 'framer-motion';
 import CommentModal from './commentModal';
+import apiClient from '../axiosClient';
 
 
 const BlogDetail = () => {
+  const baseURL = apiClient.defaults.baseURL;
+  
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [posts, setPosts] = useState([]);
@@ -36,14 +39,14 @@ const BlogDetail = () => {
     try {
       // console.log(id);
       // console.log(blogid);
-      const response = await axios.get(`http://localhost:5000/api/posts/blog/${blogid}`);
+      const response = await apiClient.get(`/api/posts/blog/${blogid}`);
       // console.log("Post fetch");
       setPosts(response.data);
         posts.forEach(
         async (post) => {
           try {
-            const LikebyPost = await axios.get(`http://localhost:5000/api/likes/post/${post._id}`);  // no of likes for each post
-            const PostLikedByUser = await axios.get(`http://localhost:5000/api/likes/user/${author_id}`); 
+            const LikebyPost = await apiClient.get(`api/likes/post/${post._id}`);  // no of likes for each post
+            const PostLikedByUser = await axios.get(`/api/likes/user/${author_id}`); 
             
             const isLiked = PostLikedByUser.data.includes(post._id);
             
@@ -62,7 +65,7 @@ const BlogDetail = () => {
   const fetchBlogs = async () => {
     // console.log("blog fetch");
     try {
-      const response = await axios.get(`http://localhost:5000/api/blogs/author/${author_id}`);
+      const response = await apiClient.get(`/api/blogs/author/${author_id}`);
       if (response.data) {
         setBlogs(response.data);
       }
@@ -73,7 +76,7 @@ const BlogDetail = () => {
 
   const fetchTitle = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/blogs/${currentBlogId}`);
+      const response = await apiClient.get(`/api/blogs/${currentBlogId}`);
       if (response.data) {
         setTitle(response.data.title);
       }
@@ -139,7 +142,7 @@ const BlogDetail = () => {
     try {
       if (isLiked) 
       {
-        await axios.delete(`http://localhost:5000/api/likes`, {
+        await apiClient.delete(`/api/likes`, {
           params: {
              post_id: post._id, 
              user_id: author_id 
@@ -149,7 +152,7 @@ const BlogDetail = () => {
       } 
       else 
       {
-        await axios.post('http://localhost:5000/api/likes', {
+        await apiClient.post('/api/likes', {
            post_id: post._id, 
            user_id: author_id 
         });
@@ -179,7 +182,7 @@ const BlogDetail = () => {
   const handleDeletePost = async (postId) => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/posts/${postId}`);
+        await apiClient.delete(`/api/posts/${postId}`);
         setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
       } catch (err) {
         console.error('Error deleting post:', err);
@@ -268,7 +271,7 @@ const BlogDetail = () => {
                     {post.files.some(file => file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.jpeg')) ? (
                       <div className="relative">
                         <img
-                          src={`http://localhost:5000/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
+                          src={`${baseURL}/uploads/${post.files[currentImageIndexes[postIndex] || 0]}`}
                           alt={`Post Image ${currentImageIndexes[postIndex] + 1}`}
                           className="w-1/2 h-auto rounded-lg shadow-md inline"
                         />
