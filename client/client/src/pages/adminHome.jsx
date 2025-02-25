@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import BlogCard from './BlogCard';
+import BlogCard from './blogcard';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../axiosClient';
 

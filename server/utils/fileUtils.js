@@ -3,7 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 
-const uploadDir = './uploads';
+const uploadDir = './api';
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
             // will create folder named uploads in root directory
             // first argument is error, second argument is path
             console.log("Setting storage destination.");
-            cb(null, './uploads');
+            cb(null, './api/uploads');
         },
         filename: function (req, file, cb){
             // first argument is error, second argument is name of the file with timestamp for avoiding duplication

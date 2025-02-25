@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
 import '../App.css'; // Ensure you import your CSS file
-import BlogCard from "./BlogCard";
+import BlogCard from "./blogcard";
 import logo from '../assets/logo.png';
 import {motion} from 'framer-motion';
 import apiClient from "../axiosClient";

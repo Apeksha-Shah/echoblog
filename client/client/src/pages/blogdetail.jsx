@@ -11,7 +11,8 @@ import apiClient from '../axiosClient';
 
 const BlogDetail = () => {
   const baseURL = apiClient.defaults.baseURL;
-  
+  console.log(baseURL);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [posts, setPosts] = useState([]);
@@ -45,8 +46,8 @@ const BlogDetail = () => {
         posts.forEach(
         async (post) => {
           try {
-            const LikebyPost = await apiClient.get(`api/likes/post/${post._id}`);  // no of likes for each post
-            const PostLikedByUser = await axios.get(`/api/likes/user/${author_id}`); 
+            const LikebyPost = await apiClient.get(`/api/likes/post/${post._id}`);  // no of likes for each post
+            const PostLikedByUser = await apiClient.get(`/api/likes/user/${author_id}`); 
             
             const isLiked = PostLikedByUser.data.includes(post._id);
             
