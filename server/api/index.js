@@ -32,7 +32,7 @@ const __dirname = dirname(__filename);
 const app = express();
 
 const corsOption = {
-    origin: ['http://localhost:5173'],
+    origin: ['https://echoblog-wheat.vercel.app'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }
