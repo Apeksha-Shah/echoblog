@@ -41,7 +41,7 @@ app.use(cors(corsOption));
 
 connectDB();
 
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // middleware to serve static files
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
@@ -70,8 +70,6 @@ app.use((req, res, next) => {
 });
   
 
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-
-export default serverless(app);
+app.listen(PORT || 3000, '0.0.0.0', () => {
+    console.log(`Server running on port ${process.env.PORT || 3000}`);
+});
